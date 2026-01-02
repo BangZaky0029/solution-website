@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/components/cards/PackageCard.jsx
+// FILE: src/components/cards/PackageCard.jsx - UPDATED
 // =========================================
 
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { formatCurrency } from '../../utils/helpers';
 import Button from '../common/Button';
+import api from '../../services/api';
 
 const PackageCard = ({ 
   id, 
@@ -18,7 +19,7 @@ const PackageCard = ({
   isPopular = false,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSelectPackage = async () => {
@@ -28,8 +29,39 @@ const PackageCard = ({
     }
 
     setIsLoading(true);
-    navigate(`/payment?packageId=${id}`);
+    
+    try {
+      // Cek apakah user sudah punya paket aktif
+      const response = await api.get('/users/tokens');
+      
+      if (response.data && response.data.length > 0) {
+        const activeToken = response.data.find(token => {
+          const expiredDate = new Date(token.expired_at);
+          return expiredDate > new Date();
+        });
+
+        if (activeToken) {
+          alert('Paket anda sudah aktif. Silahkan hubungi admin jika ingin mengubah paket.');
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Jika tidak ada paket aktif, lanjut ke payment
+      navigate(`/payment?packageId=${id}`);
+    } catch (error) {
+      console.error('Error checking package:', error);
+      // Jika error (misalnya belum pernah beli), lanjut ke payment
+      navigate(`/payment?packageId=${id}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Parse features jika masih string
+  const featureList = typeof features === 'string' 
+    ? JSON.parse(features || '[]') 
+    : features;
 
   return (
     <div className={`
@@ -64,20 +96,33 @@ const PackageCard = ({
           Pilih Paket
         </Button>
 
-        <div className="space-y-4">
-          <p className="text-xs font-semibold text-gray-500 uppercase">Termasuk:</p>
-          {features && features.length > 0 ? (
-            features.map((feature, index) => (
-              <div key={index} className="flex items-start gap-3">
-                <span className="text-green-500 text-xl mt-1">✓</span>
-                <span className="text-muted text-sm">{feature}</span>
-              </div>
-            ))
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-gray-500 uppercase mb-4">Termasuk:</p>
+          
+          {featureList && featureList.length > 0 ? (
+            <ul className="space-y-3">
+              {featureList.map((feature, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <span className="text-green-500 text-xl flex-shrink-0 mt-0.5">✓</span>
+                  <span className="text-muted text-sm">{feature}</span>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <div className="flex items-start gap-3">
-              <span className="text-green-500 text-xl mt-1">✓</span>
-              <span className="text-muted text-sm">Akses penuh ke semua tools</span>
-            </div>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="text-green-500 text-xl flex-shrink-0 mt-0.5">✓</span>
+                <span className="text-muted text-sm">Akses penuh ke semua tools</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-green-500 text-xl flex-shrink-0 mt-0.5">✓</span>
+                <span className="text-muted text-sm">Support 24/7</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-green-500 text-xl flex-shrink-0 mt-0.5">✓</span>
+                <span className="text-muted text-sm">Unlimited Usage</span>
+              </li>
+            </ul>
           )}
         </div>
       </div>
