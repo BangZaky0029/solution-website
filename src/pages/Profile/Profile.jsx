@@ -1,21 +1,24 @@
 // =========================================
-// FILE: src/pages/Profile/Profile.jsx
+// FILE: src/pages/Profile/Profile.jsx - UPDATED
 // =========================================
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
-import { userController } from '../../controllers/userController';
 import { getSubscriptionStatus, getDaysRemaining, formatDate, getInitials } from '../../utils/helpers';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Button from '../../components/common/Button';
+import api from '../../services/api';
 import '../../styles/Style_forWebsite/Profile.css';
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { data: userTokens, loading: tokensLoading, refetch } = useFetch('/users/tokens');
+  const [payments, setPayments] = useState([]);
+  const [notification, setNotification] = useState(null);
+  const [loadingPayments, setLoadingPayments] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -23,16 +26,74 @@ const Profile = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  if (tokensLoading) return <LoadingSpinner />;
+  useEffect(() => {
+    // Fetch user payments
+    const fetchPayments = async () => {
+      try {
+        const response = await api.get('/payment/user/payments');
+        setPayments(response.data);
+        
+        // Cek jika ada payment yang baru dikonfirmasi
+        const recentConfirmed = response.data.find(p => 
+          p.status === 'confirmed' && 
+          new Date(p.updated_at) > new Date(Date.now() - 60000) // dalam 1 menit terakhir
+        );
+        
+        if (recentConfirmed) {
+          setNotification({
+            type: 'success',
+            message: `Selamat! Paket ${recentConfirmed.package_name} Anda telah aktif.`
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+      } finally {
+        setLoadingPayments(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchPayments();
+    }
+  }, [isAuthenticated]);
+
+  const handleDownloadInvoice = async (paymentId) => {
+    try {
+      const response = await api.get(`/payment/${paymentId}/invoice`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice-${paymentId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      alert('Gagal mengunduh invoice. Silakan coba lagi.');
+    }
+  };
+
+  if (tokensLoading || loadingPayments) return <LoadingSpinner />;
 
   return (
     <div className="profile-container">
+      {/* Notification */}
+      {notification && (
+        <div className={`notification ${notification.type} animate-slide-down`}>
+          <span>{notification.message}</span>
+          <button onClick={() => setNotification(null)}>✕</button>
+        </div>
+      )}
+
+      {/* Profile Header */}
       <div className="profile-header">
-        <div className="w-32 h-32 rounded-full bg-gradient-primary flex items-center justify-center text-white text-5xl">
+        <div className="profile-avatar">
           {getInitials(user?.name || 'User')}
         </div>
 
-        <div className="flex-1">
+        <div className="profile-info">
           <h2>{user?.name || 'User'}</h2>
           <p className="text-muted">{user?.email}</p>
           <p className="text-muted">{user?.phone}</p>
@@ -43,66 +104,114 @@ const Profile = () => {
         </Button>
       </div>
 
-      <div className="profile-grid">
-        {userTokens && userTokens.length > 0 ? (
-          userTokens.map((token) => {
-            const status = getSubscriptionStatus(token.package_name, token.expired_at);
-            const daysLeft = getDaysRemaining(token.expired_at);
+      {/* Active Packages */}
+      <div className="profile-section">
+        <h3 className="section-title">Paket Aktif</h3>
+        <div className="profile-grid">
+          {userTokens && userTokens.length > 0 ? (
+            userTokens.map((token) => {
+              const status = getSubscriptionStatus(token.package_name, token.expired_at);
+              const daysLeft = getDaysRemaining(token.expired_at);
 
-            return (
-              <div key={token.id} className={`package-card ${status === 'active' ? 'active' : ''}`}>
-                <div className={`package-status ${status}`}>
-                  {status === 'active' ? '✓ Aktif' : '⚠ Berakhir'}
-                </div>
-
-                <h3 className="text-2xl font-bold text-dark mb-4">{token.package_name}</h3>
-
-                <div className="space-y-3 mb-6">
-                  <div>
-                    <p className="text-xs text-muted">Status</p>
-                    <p className="text-sm font-semibold text-dark capitalize">{status}</p>
+              return (
+                <div key={token.id} className={`package-card ${status === 'active' ? 'active' : ''}`}>
+                  <div className={`package-status ${status}`}>
+                    {status === 'active' ? '✓ Aktif' : '⚠ Berakhir'}
                   </div>
 
-                  <div>
-                    <p className="text-xs text-muted">Tanggal Aktivasi</p>
-                    <p className="text-sm font-semibold text-dark">
-                      {formatDate(token.activated_at)}
-                    </p>
-                  </div>
+                  <h3 className="text-2xl font-bold text-dark mb-4">{token.package_name}</h3>
 
-                  <div>
-                    <p className="text-xs text-muted">Tanggal Berakhir</p>
-                    <p className="text-sm font-semibold text-dark">
-                      {formatDate(token.expired_at)}
-                    </p>
-                  </div>
-
-                  {status === 'active' && (
+                  <div className="space-y-3 mb-6">
                     <div>
-                      <p className="text-xs text-muted">Sisa Hari</p>
-                      <p className="text-lg font-bold text-blue-600">{daysLeft} hari</p>
+                      <p className="text-xs text-muted">Status</p>
+                      <p className="text-sm font-semibold text-dark capitalize">{status}</p>
                     </div>
+
+                    <div>
+                      <p className="text-xs text-muted">Tanggal Aktivasi</p>
+                      <p className="text-sm font-semibold text-dark">
+                        {formatDate(token.activated_at)}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-muted">Tanggal Berakhir</p>
+                      <p className="text-sm font-semibold text-dark">
+                        {formatDate(token.expired_at)}
+                      </p>
+                    </div>
+
+                    {status === 'active' && (
+                      <div>
+                        <p className="text-xs text-muted">Sisa Hari</p>
+                        <p className="text-lg font-bold text-blue-600">{daysLeft} hari</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    variant="primary"
+                    className="w-full"
+                    onClick={() => navigate('/payment')}
+                  >
+                    Perpanjang
+                  </Button>
+                </div>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-muted mb-4">Anda belum memiliki paket berlangganan</p>
+              <Button variant="primary" onClick={() => navigate('/payment')}>
+                Pilih Paket Sekarang
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Payment History */}
+      <div className="profile-section">
+        <h3 className="section-title">Riwayat Pembayaran</h3>
+        <div className="payment-history">
+          {payments && payments.length > 0 ? (
+            <div className="payment-list">
+              {payments.map((payment) => (
+                <div key={payment.id} className="payment-item">
+                  <div className="payment-info">
+                    <h4 className="font-bold text-dark">{payment.package_name}</h4>
+                    <p className="text-sm text-muted">{formatDate(payment.created_at)}</p>
+                  </div>
+
+                  <div className="payment-details">
+                    <span className={`payment-status ${payment.status}`}>
+                      {payment.status === 'pending' && '⏳ Pending'}
+                      {payment.status === 'confirmed' && '✓ Terverifikasi'}
+                      {payment.status === 'rejected' && '✕ Ditolak'}
+                    </span>
+                    <p className="text-lg font-bold text-dark">
+                      Rp {payment.amount?.toLocaleString('id-ID')}
+                    </p>
+                  </div>
+
+                  {payment.status === 'confirmed' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDownloadInvoice(payment.id)}
+                    >
+                      📥 Download Invoice
+                    </Button>
                   )}
                 </div>
-
-                <Button
-                  variant="primary"
-                  className="w-full"
-                  onClick={() => navigate('/payment')}
-                >
-                  Perpanjang
-                </Button>
-              </div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center py-12">
-            <p className="text-muted mb-4">Anda belum memiliki paket berlangganan</p>
-            <Button variant="primary" onClick={() => navigate('/payment')}>
-              Pilih Paket Sekarang
-            </Button>
-          </div>
-        )}
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted">
+              <p>Belum ada riwayat pembayaran</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
