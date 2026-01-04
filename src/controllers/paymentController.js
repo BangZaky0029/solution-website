@@ -6,11 +6,12 @@ import api from '../services/api';
 
 export const paymentController = {
   // Create payment
-  createPayment: async (packageId, paymentMethod) => {
+  createPayment: async (packageId, paymentMethod, forceUpgrade = false) => {
     try {
       const response = await api.post('/payment/create', {
         package_id: packageId,
         method: paymentMethod,
+        forceUpgrade,
       });
       return response.data;
     } catch (error) {
@@ -57,4 +58,15 @@ export const paymentController = {
       throw error;
     }
   },
+
+  // ✅ Check if user has active package/trial
+  checkActivePackage: async () => {
+    try {
+      const response = await api.get('/payment/user/active-package'); // harus sama seperti di backend
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
 };

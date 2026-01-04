@@ -34,30 +34,16 @@ const PackageCard = ({
     setIsLoading(true);
 
     try {
-      const response = await api.get('/users/tokens');
-
-      if (response.data && response.data.length > 0) {
-        const activeToken = response.data.find(token => {
-          return new Date(token.expired_at) > new Date();
-        });
-
-        if (activeToken) {
-          alert(
-            'Paket anda sudah aktif. Silahkan hubungi admin jika ingin mengubah paket.'
-          );
-          setIsLoading(false);
-          return;
-        }
-      }
-
+      // Langsung arahkan ke payment tanpa cek token aktif
       navigate(`/payment?packageId=${id}`);
     } catch (error) {
-      console.error('Error checking package:', error);
+      console.error('Error selecting package:', error);
       navigate(`/payment?packageId=${id}`);
     } finally {
       setIsLoading(false);
     }
   };
+
 
   // ==============================
   // PARSE DESCRIPTION JSON

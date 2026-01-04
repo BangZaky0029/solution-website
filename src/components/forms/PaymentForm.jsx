@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { PAYMENT_METHODS } from '../../utils/constants';
 import Button from '../common/Button';
+import qrisImage from '../../assets/qrcode/nuansaLogo.png';
 
 const PaymentForm = ({ onSubmit, loading = false, selectedMethod = null }) => {
   const [formData, setFormData] = useState({
@@ -68,12 +69,30 @@ const PaymentForm = ({ onSubmit, loading = false, selectedMethod = null }) => {
               <div>
                 <span className="font-semibold text-dark">{value}</span>
                 <p className="text-xs text-muted">
-                  {value === PAYMENT_METHODS.BCA ? 'Transfer ke rekening BCA' : 'Scan QR Code untuk pembayaran'}
+                  {value === PAYMENT_METHODS.BCA
+                    ? 'Transfer ke rekening BCA'
+                    : 'Scan QR Code untuk pembayaran'}
                 </p>
               </div>
             </label>
           ))}
         </div>
+
+        {/* Dynamic Info Based on Method */}
+        {formData.paymentMethod === PAYMENT_METHODS.BCA && (
+          <div className="bg-blue-50 rounded-lg p-4 mt-4 text-sm text-dark">
+            <p><strong>Atas Nama:</strong> PT Nuansa Berkah Sejahtera</p>
+            <p><strong>Bank:</strong> BCA</p>
+            <p><strong>No. Rekening:</strong> 7000944844</p>
+          </div>
+        )}
+
+        {formData.paymentMethod === PAYMENT_METHODS.QRIS && (
+          <div className="bg-blue-50 rounded-lg p-4 mt-4 text-center">
+            <img src={qrisImage} alt="QRIS Nuansa" className="mx-auto w-48 h-48 object-contain" />
+            <p className="mt-2 text-sm text-muted">Scan QR Code untuk pembayaran</p>
+          </div>
+        )}
       </div>
 
       <div className="form-group">
@@ -110,7 +129,7 @@ const PaymentForm = ({ onSubmit, loading = false, selectedMethod = null }) => {
           <input
             type="file"
             id="proofFile"
-            accept="image/*"
+            accept=".png,.jpg,.jpeg,.pdf"
             onChange={handleFileChange}
             disabled={loading}
             className="hidden"

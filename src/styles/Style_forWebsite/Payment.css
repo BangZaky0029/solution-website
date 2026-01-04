@@ -63,3 +63,28 @@ FILE: src/styles/Style_forWebsite/Payment.css
     top: 0;
   }
 }
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+}
+
+.btn {
+  padding: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+}
+
+.btn-primary {
+  background-color: var(--blue-500);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--blue-600);
+}

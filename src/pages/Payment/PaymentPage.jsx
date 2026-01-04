@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
-import { packageController } from '../../controllers/packageController';
 import { paymentController } from '../../controllers/paymentController';
 import { formatCurrency } from '../../utils/helpers';
 import PaymentForm from '../../components/forms/PaymentForm';
@@ -15,7 +14,7 @@ import '../../styles/Style_forWebsite/Payment.css';
 
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const packageId = searchParams.get('packageId');
 
@@ -23,31 +22,54 @@ const PaymentPage = () => {
     packageId ? `/packages/${packageId}` : null
   );
 
-  const [selectedMethod, setSelectedMethod] = useState('QRIS');
+  const [selectedMethod] = useState('QRIS');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState(null);
+  const [forceUpgrade, setForceUpgrade] = useState(false);
+
+  // ============================
+  // CEK PAKET AKTIF
+  // ============================
+  const checkActivePackage = async () => {
+    try {
+      const res = await paymentController.checkActivePackage();
+      if (res.hasActive) {
+        setWarning(res.warning + ` Paket aktif: ${res.currentPackage.package_name}`);
+      } else {
+        setWarning(null);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-    if (!packageId) {
-      navigate('/');
-    }
+    if (!isAuthenticated) navigate('/login');
+    if (!packageId) navigate('/');
+    checkActivePackage();
   }, [isAuthenticated, packageId, navigate]);
 
+  // ============================
+  // HANDLE PAYMENT
+  // ============================
   const handlePaymentSubmit = async (formData) => {
     setLoading(true);
     setError('');
 
     try {
-      // Create payment first
       const paymentResult = await paymentController.createPayment(
         packageId,
-        formData.paymentMethod
+        formData.paymentMethod,
+        forceUpgrade
       );
 
-      // Then confirm with proof
+      if (paymentResult.hasActive && !forceUpgrade) {
+        setWarning(paymentResult.warning);
+        setLoading(false);
+        return;
+      }
+
       await paymentController.confirmPayment(
         paymentResult.payment_id,
         formData.email,
@@ -58,6 +80,7 @@ const PaymentPage = () => {
       navigate('/payment-confirmation', {
         state: { paymentId: paymentResult.payment_id }
       });
+
     } catch (err) {
       setError(err.response?.data?.message || 'Terjadi kesalahan');
     } finally {
@@ -70,12 +93,34 @@ const PaymentPage = () => {
   return (
     <div className="payment-container">
       <div className="payment-wrapper">
+
+        {/* ============================
+            WARNING UPGRADE
+        ============================ */}
+        {warning && (
+          <div className="bg-yellow-100 text-yellow-900 p-4 rounded mb-4">
+            {warning}
+            <button
+              onClick={() => {
+                setForceUpgrade(true);
+                alert('Silakan submit ulang untuk melanjutkan upgrade paket.');
+              }}
+              className="ml-4 px-3 py-1 bg-yellow-500 text-white rounded"
+            >
+              Lanjutkan Upgrade
+            </button>
+          </div>
+        )}
+
         <PaymentForm
           onSubmit={handlePaymentSubmit}
           loading={loading}
           selectedMethod={selectedMethod}
         />
 
+        {/* ============================
+            PAYMENT SUMMARY
+        ============================ */}
         <div className="payment-summary">
           <h3 className="text-2xl font-bold text-dark mb-6">Ringkasan Pembayaran</h3>
 
@@ -116,15 +161,19 @@ const PaymentPage = () => {
               <div className="bg-blue-50 rounded-lg p-4 text-sm">
                 <h4 className="font-semibold text-dark mb-2">Included Features:</h4>
                 <ul className="space-y-2 text-muted">
-                  {packageData.features && typeof packageData.features === 'string' ? (
-                    JSON.parse(packageData.features).map((feature, i) => (
+                  {packageData.description && typeof packageData.description === 'string' ? (
+                    JSON.parse(packageData.description).map((feature, i) => (
                       <li key={i} className="flex gap-2">
                         <span>✓</span>
                         <span>{feature}</span>
                       </li>
                     ))
                   ) : (
-                    <li>✓ Akses penuh ke semua tools</li>
+                    <>
+                      <li className="flex gap-2"><span>✓</span><span>Akses penuh ke semua tools</span></li>
+                      <li className="flex gap-2"><span>✓</span><span>Support 24/7</span></li>
+                      <li className="flex gap-2"><span>✓</span><span>Unlimited Usage</span></li>
+                    </>
                   )}
                 </ul>
               </div>
