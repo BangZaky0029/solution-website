@@ -16,12 +16,12 @@ const CTA = () => {
 
         <div className="flex gap-4 justify-center flex-wrap">
           <Link to="/register">
-            <Button variant="primary" size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button variant="primary" size="lg" className="bg-white text-white hover:bg-gray-100">
               Daftar Gratis
             </Button>
           </Link>
           <a href="#pricing">
-            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+            <Button variant="secondary" size="lg" className="bg-white text-white hover:bg-gray-100">
               Lihat Paket
             </Button>
           </a>

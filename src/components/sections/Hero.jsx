@@ -5,6 +5,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../common/Button';
+import logo from '../../assets/images/nuansaLogo.png';
 
 const Hero = () => {
   const { isAuthenticated } = useAuth();
@@ -50,8 +51,8 @@ const Hero = () => {
         <div className="hidden lg:flex items-center justify-center animate-slide-up">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-primary rounded-3xl blur-3xl opacity-20"></div>
-            <div className="relative bg-gradient-primary rounded-3xl p-8 w-80 h-80 flex items-center justify-center text-white text-6xl">
-              💳
+            <div className="relative bg-white rounded-3xl p-8 w-580 h-580 flex items-center justify-center text-white text-6xl">
+              <img src={logo} alt="Nuansasolution" className="w-712 mb-4" />
             </div>
           </div>
         </div>

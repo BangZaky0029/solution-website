@@ -1,6 +1,8 @@
 // =========================================
 // FILE: src/components/common/Footer.jsx
 // =========================================
+import logo from '../../assets/images/nuansaLogo.png';
+
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -10,7 +12,7 @@ const Footer = () => {
       <div className="container-max">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
           <div>
-            <h4 className="text-lg font-bold mb-4">Gateway APTO</h4>
+            <img src={logo} alt="Nuansasolution" className="w-32 mb-1" />
             <p className="text-gray-400 text-sm">
               Platform pembayaran terpadu dengan berbagai tools dan features unggulan.
             </p>
@@ -45,7 +47,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 pt-10 text-center text-sm text-gray-400">
-          <p>&copy; {currentYear} Gateway APTO. All rights reserved.</p>
+          <p>&copy; 2022 nuansasolution.id. All rights reserved.</p>
         </div>
       </div>
     </footer>

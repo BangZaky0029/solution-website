@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import "@/styles/Style_forWebsite/Home.css";
+import logo from '../../assets/images/NS_blank_02.png';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +21,17 @@ const Header = () => {
   return (
     <header className="bg-white shadow-soft sticky top-0 z-50">
       <nav className="container-max flex justify-between items-center h-20">
-        <Link to="/" className="text-2xl font-bold gradient-primary">
-          Gateway APTO
+        <Link to="https://nuansasolution.id/" target="_blank">
+          <img src={logo} alt="Nuansasolution" className="w-32 mb-1" />
         </Link>
 
         <div className="hidden md:flex gap-8">
           <Link to="/" className="text-muted hover:text-dark transition">
             Home
           </Link>
-          <Link to="/features" className="text-muted hover:text-dark transition">
+          <a href="#features" className="text-muted hover:text-dark transition">
             Features
-          </Link>
+          </a>
           <a href="#pricing" className="text-muted hover:text-dark transition">
             Pricing
           </a>
