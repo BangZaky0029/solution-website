@@ -1,9 +1,8 @@
-// =========================================
-// FILE: src/hooks/useAuth.js
-// =========================================
+// C:\codingVibes\nuansasolution\.mainweb\payment-tools\gateway_apto-website\src\hooks\useAuth.jsx
 
 import { useState, useEffect, useContext, createContext } from 'react';
 import { authController } from '../controllers/authController';
+import { userController } from '../controllers/userController';
 
 const AuthContext = createContext(null);
 
@@ -12,46 +11,45 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        if (authController.isAuthenticated()) {
-          const userData = await authController.getCurrentUser();
-          setUser(userData);
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        setIsAuthenticated(false);
-      } finally {
+  const checkAuth = async () => {
+    try {
+      if (!authController.isAuthenticated()) {
         setLoading(false);
+        return;
       }
-    };
 
+      const userData = await userController.getProfile(); // ✅ BENAR
+      setUser(userData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      authController.logout();
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     checkAuth();
   }, []);
 
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const response = await authController.login(email, password);
-      const userData = await authController.getCurrentUser();
+      const res = await authController.login(email, password);
+      const userData = await userController.getProfile(); // ✅ BENAR
       setUser(userData);
       setIsAuthenticated(true);
-      return response;
-    } catch (error) {
-      throw error;
+      return res;
     } finally {
       setLoading(false);
     }
   };
 
   const register = async (name, email, phone, password) => {
-    try {
-      return await authController.register(name, email, phone, password);
-    } catch (error) {
-      throw error;
-    }
+    return authController.register(name, email, phone, password);
   };
 
   const logout = () => {
@@ -68,9 +66,9 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
+
+console.log('AuthProvider rendered');

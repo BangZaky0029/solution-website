@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/components/modals/UpgradeWarningModal.jsx
+// FILE: src/components/modals/UpgradeWarningModal.jsx - FIXED
 // =========================================
 import Button from '../common/Button';
 import './UpgradeWarningModal.css';
@@ -13,6 +13,19 @@ const UpgradeWarningModal = ({
   loading = false 
 }) => {
   if (!isOpen) return null;
+
+  // ✅ Validasi data dengan fallback
+  const safeCurrentPackage = {
+    name: currentPackage?.name || 'Paket Tidak Diketahui',
+    expiredAt: currentPackage?.expiredAt || '-',
+    daysLeft: currentPackage?.daysLeft !== undefined ? currentPackage.daysLeft : 0
+  };
+
+  const safeNewPackage = {
+    name: newPackage?.name || 'Paket Baru',
+    duration: newPackage?.duration || 0,
+    price: newPackage?.price || 'Rp 0'
+  };
 
   return (
     <div className="modal-overlay">
@@ -29,12 +42,12 @@ const UpgradeWarningModal = ({
             <div className="info-section">
               <h4>Paket Aktif Saat Ini</h4>
               <div className="package-info current">
-                <div className="package-name-badge">{currentPackage.name}</div>
+                <div className="package-name-badge">{safeCurrentPackage.name}</div>
                 <p className="package-detail">
-                  <strong>Berakhir:</strong> {currentPackage.expiredAt}
+                  <strong>Berakhir:</strong> {safeCurrentPackage.expiredAt}
                 </p>
                 <p className="package-detail">
-                  <strong>Sisa:</strong> {currentPackage.daysLeft} hari
+                  <strong>Sisa:</strong> {safeCurrentPackage.daysLeft} hari
                 </p>
               </div>
             </div>
@@ -48,12 +61,12 @@ const UpgradeWarningModal = ({
             <div className="info-section">
               <h4>Paket Baru</h4>
               <div className="package-info new">
-                <div className="package-name-badge new">{newPackage.name}</div>
+                <div className="package-name-badge new">{safeNewPackage.name}</div>
                 <p className="package-detail">
-                  <strong>Durasi:</strong> {newPackage.duration} hari
+                  <strong>Durasi:</strong> {safeNewPackage.duration} hari
                 </p>
                 <p className="package-detail">
-                  <strong>Harga:</strong> {newPackage.price}
+                  <strong>Harga:</strong> {safeNewPackage.price}
                 </p>
               </div>
             </div>

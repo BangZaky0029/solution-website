@@ -1,5 +1,6 @@
 // =========================================
-// FILE: src/pages/Payment/PaymentPage.jsx - IMPROVED
+// FILE: PaymentPage.jsx - FRONTEND PAGE FIXED
+// Path: src/pages/Payment/PaymentPage.jsx
 // =========================================
 
 import { useState, useEffect } from 'react';
@@ -19,6 +20,7 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const packageId = searchParams.get('packageId');
 
+  // ✅ Fetch package data
   const { data: packageData, loading: pkgLoading } = useFetch(
     packageId ? `/packages/${packageId}` : null
   );
@@ -33,7 +35,7 @@ const PaymentPage = () => {
   const [pendingFormData, setPendingFormData] = useState(null);
 
   // ============================
-  // CEK PAKET AKTIF SAAT LOAD
+  // ✅ CEK PAKET AKTIF - SIMPLIFIED
   // ============================
   useEffect(() => {
     if (!isAuthenticated) {
@@ -48,21 +50,42 @@ const PaymentPage = () => {
     checkActivePackage();
   }, [isAuthenticated, packageId, navigate]);
 
+  // ✅ FIXED: Gunakan endpoint yang benar dari backend
   const checkActivePackage = async () => {
     try {
-      const res = await paymentController.checkActivePackage();
-      if (res.hasActive) {
-        setActivePackage(res.currentPackage);
+      // Panggil endpoint /payment/check-active-package
+      const response = await paymentController.checkActivePackage();
+      
+      console.log('Check active package response:', response);
+
+      // Backend sekarang return: { success, hasActive, activePackage?, warning? }
+      if (response.success && response.hasActive && response.activePackage) {
+        setActivePackage({
+          id: response.activePackage.token_id,
+          package_id: response.activePackage.package_id,
+          package_name: response.activePackage.package_name,
+          activated_at: response.activePackage.activated_at,
+          expired_at: response.activePackage.expired_at,
+        });
+        
+        console.log('Active package found:', response.activePackage);
+      } else {
+        console.log('No active package');
+        setActivePackage(null);
       }
     } catch (err) {
       console.error('Error checking active package:', err);
+      setActivePackage(null);
     }
   };
 
   // ============================
-  // HANDLE PAYMENT SUBMISSION
+  // ✅ HANDLE PAYMENT SUBMISSION
   // ============================
   const handlePaymentSubmit = async (formData) => {
+    // Reset error
+    setError('');
+
     // ✅ Jika ada paket aktif, tampilkan warning modal
     if (activePackage) {
       setPendingFormData(formData);
@@ -75,7 +98,7 @@ const PaymentPage = () => {
   };
 
   // ============================
-  // PROSES UPGRADE CONFIRMATION
+  // ✅ HANDLE UPGRADE CONFIRMATION
   // ============================
   const handleUpgradeConfirm = async () => {
     if (pendingFormData) {
@@ -92,7 +115,7 @@ const PaymentPage = () => {
   };
 
   // ============================
-  // PROCESS PAYMENT
+  // ✅ PROCESS PAYMENT - FIXED
   // ============================
   const processPayment = async (formData, forceUpgrade = false) => {
     setLoading(true);
@@ -106,7 +129,17 @@ const PaymentPage = () => {
         forceUpgrade
       );
 
+      console.log('Create payment result:', paymentResult);
+
+      // ✅ FIXED: Backend sekarang kirim success flag
       if (!paymentResult.success) {
+        // Jika backend return hasActive (seharusnya tidak, karena sudah dicek di frontend)
+        if (paymentResult.hasActive) {
+          setError('Anda memiliki paket aktif. Silakan konfirmasi upgrade.');
+          setLoading(false);
+          return;
+        }
+        
         setError(paymentResult.message || 'Gagal membuat payment');
         setLoading(false);
         return;
@@ -120,6 +153,9 @@ const PaymentPage = () => {
         formData.proofFile
       );
 
+      console.log('Confirm payment result:', confirmResult);
+
+      // ✅ FIXED: Backend sekarang kirim success flag
       if (!confirmResult.success) {
         setError(confirmResult.message || 'Gagal mengonfirmasi pembayaran');
         setLoading(false);
@@ -141,7 +177,7 @@ const PaymentPage = () => {
   };
 
   // ============================
-  // PREPARE MODAL DATA
+  // ✅ PREPARE MODAL DATA
   // ============================
   const getModalData = () => {
     if (!activePackage || !packageData) return null;
@@ -150,14 +186,14 @@ const PaymentPage = () => {
 
     return {
       currentPackage: {
-        name: activePackage.package_name,
-        expiredAt: formatDate(activePackage.expired_at),
+        name: activePackage.package_name || 'Paket Tidak Diketahui',
+        expiredAt: formatDate(activePackage.expired_at) || '-',
         daysLeft: daysLeft > 0 ? daysLeft : 0,
       },
       newPackage: {
-        name: packageData.name,
-        duration: packageData.duration_days,
-        price: formatCurrency(packageData.price),
+        name: packageData.name || 'Paket Baru',
+        duration: packageData.duration_days || 0,
+        price: formatCurrency(packageData.price) || 'Rp 0',
       },
     };
   };
@@ -194,7 +230,7 @@ const PaymentPage = () => {
   // ============================
   return (
     <>
-      {/* Upgrade Warning Modal */}
+      {/* ✅ Upgrade Warning Modal */}
       {modalData && (
         <UpgradeWarningModal
           isOpen={showUpgradeWarning}
@@ -215,6 +251,7 @@ const PaymentPage = () => {
               <p>Lengkapi data pembayaran Anda untuk melanjutkan</p>
             </div>
 
+            {/* ✅ Error Alert */}
             {error && (
               <div className="payment-error-alert animate-slide-down">
                 <span className="error-icon">⚠️</span>
@@ -262,7 +299,7 @@ const PaymentPage = () => {
                       </div>
                     </div>
 
-                    {/* Active Package Warning */}
+                    {/* ✅ Active Package Warning */}
                     {activePackage && (
                       <div className="summary-card upgrade-info-card">
                         <h3 className="card-title">⚠️ Paket Aktif</h3>
