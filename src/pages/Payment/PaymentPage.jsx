@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/pages/Payment/PaymentPage.jsx
+// FILE: src/pages/Payment/PaymentPage.jsx - IMPROVED
 // =========================================
 
 import { useState, useEffect } from 'react';
@@ -7,8 +7,9 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { paymentController } from '../../controllers/paymentController';
-import { formatCurrency } from '../../utils/helpers';
+import { formatCurrency, formatDate, getDaysRemaining } from '../../utils/helpers';
 import PaymentForm from '../../components/forms/PaymentForm';
+import UpgradeWarningModal from '../../components/modals/UpgradeWarningModal';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import '../../styles/Style_forWebsite/Payment.css';
 
@@ -25,163 +26,328 @@ const PaymentPage = () => {
   const [selectedMethod] = useState('QRIS');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [warning, setWarning] = useState(null);
-  const [forceUpgrade, setForceUpgrade] = useState(false);
+  
+  // ✅ State untuk warning modal
+  const [showUpgradeWarning, setShowUpgradeWarning] = useState(false);
+  const [activePackage, setActivePackage] = useState(null);
+  const [pendingFormData, setPendingFormData] = useState(null);
 
   // ============================
-  // CEK PAKET AKTIF
+  // CEK PAKET AKTIF SAAT LOAD
   // ============================
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    if (!packageId) {
+      navigate('/');
+      return;
+    }
+
+    checkActivePackage();
+  }, [isAuthenticated, packageId, navigate]);
+
   const checkActivePackage = async () => {
     try {
       const res = await paymentController.checkActivePackage();
       if (res.hasActive) {
-        setWarning(res.warning + ` Paket aktif: ${res.currentPackage.package_name}`);
-      } else {
-        setWarning(null);
+        setActivePackage(res.currentPackage);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error checking active package:', err);
     }
   };
 
-  useEffect(() => {
-    if (!isAuthenticated) navigate('/login');
-    if (!packageId) navigate('/');
-    checkActivePackage();
-  }, [isAuthenticated, packageId, navigate]);
-
   // ============================
-  // HANDLE PAYMENT
+  // HANDLE PAYMENT SUBMISSION
   // ============================
   const handlePaymentSubmit = async (formData) => {
+    // ✅ Jika ada paket aktif, tampilkan warning modal
+    if (activePackage) {
+      setPendingFormData(formData);
+      setShowUpgradeWarning(true);
+      return;
+    }
+
+    // Kalau tidak ada paket aktif, langsung proses pembayaran
+    await processPayment(formData, false);
+  };
+
+  // ============================
+  // PROSES UPGRADE CONFIRMATION
+  // ============================
+  const handleUpgradeConfirm = async () => {
+    if (pendingFormData) {
+      await processPayment(pendingFormData, true);
+      setShowUpgradeWarning(false);
+      setPendingFormData(null);
+    }
+  };
+
+  const handleUpgradeCancel = () => {
+    setShowUpgradeWarning(false);
+    setPendingFormData(null);
+    setError('');
+  };
+
+  // ============================
+  // PROCESS PAYMENT
+  // ============================
+  const processPayment = async (formData, forceUpgrade = false) => {
     setLoading(true);
     setError('');
 
     try {
+      // 1️⃣ Buat payment record
       const paymentResult = await paymentController.createPayment(
         packageId,
         formData.paymentMethod,
         forceUpgrade
       );
 
-      if (paymentResult.hasActive && !forceUpgrade) {
-        setWarning(paymentResult.warning);
+      if (!paymentResult.success) {
+        setError(paymentResult.message || 'Gagal membuat payment');
         setLoading(false);
         return;
       }
 
-      await paymentController.confirmPayment(
+      // 2️⃣ Konfirmasi pembayaran dengan bukti
+      const confirmResult = await paymentController.confirmPayment(
         paymentResult.payment_id,
         formData.email,
         formData.phone,
         formData.proofFile
       );
 
+      if (!confirmResult.success) {
+        setError(confirmResult.message || 'Gagal mengonfirmasi pembayaran');
+        setLoading(false);
+        return;
+      }
+
+      // 3️⃣ Redirect ke halaman konfirmasi
       navigate('/payment-confirmation', {
         state: { paymentId: paymentResult.payment_id }
       });
 
     } catch (err) {
-      setError(err.response?.data?.message || 'Terjadi kesalahan');
+      const errorMsg = err.response?.data?.message || err.message || 'Terjadi kesalahan';
+      setError(errorMsg);
+      console.error('Payment error:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (pkgLoading) return <LoadingSpinner />;
+  // ============================
+  // PREPARE MODAL DATA
+  // ============================
+  const getModalData = () => {
+    if (!activePackage || !packageData) return null;
 
-  return (
-    <div className="payment-container">
-      <div className="payment-wrapper">
+    const daysLeft = getDaysRemaining(activePackage.expired_at);
 
-        {/* ============================
-            WARNING UPGRADE
-        ============================ */}
-        {warning && (
-          <div className="bg-yellow-100 text-yellow-900 p-4 rounded mb-4">
-            {warning}
-            <button
-              onClick={() => {
-                setForceUpgrade(true);
-                alert('Silakan submit ulang untuk melanjutkan upgrade paket.');
-              }}
-              className="ml-4 px-3 py-1 bg-yellow-500 text-white rounded"
-            >
-              Lanjutkan Upgrade
-            </button>
-          </div>
-        )}
+    return {
+      currentPackage: {
+        name: activePackage.package_name,
+        expiredAt: formatDate(activePackage.expired_at),
+        daysLeft: daysLeft > 0 ? daysLeft : 0,
+      },
+      newPackage: {
+        name: packageData.name,
+        duration: packageData.duration_days,
+        price: formatCurrency(packageData.price),
+      },
+    };
+  };
 
-        <PaymentForm
-          onSubmit={handlePaymentSubmit}
-          loading={loading}
-          selectedMethod={selectedMethod}
-        />
+  // ============================
+  // LOADING STATE
+  // ============================
+  if (pkgLoading) {
+    return (
+      <div className="payment-container">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
-        {/* ============================
-            PAYMENT SUMMARY
-        ============================ */}
-        <div className="payment-summary">
-          <h3 className="text-2xl font-bold text-dark mb-6">Ringkasan Pembayaran</h3>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
-            </div>
-          )}
-
-          {packageData && (
-            <>
-              <div className="space-y-4 pb-6 border-b border-gray-200">
-                <div className="flex justify-between">
-                  <span className="text-muted">Paket</span>
-                  <span className="font-semibold text-dark">{packageData.name}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-muted">Durasi</span>
-                  <span className="font-semibold text-dark">{packageData.duration_days} hari</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-muted">Harga</span>
-                  <span className="font-semibold text-dark">
-                    {formatCurrency(packageData.price)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex justify-between my-6">
-                <span className="font-bold text-dark">Total</span>
-                <span className="text-2xl font-bold text-blue-600">
-                  {formatCurrency(packageData.price)}
-                </span>
-              </div>
-
-              <div className="bg-blue-50 rounded-lg p-4 text-sm">
-                <h4 className="font-semibold text-dark mb-2">Included Features:</h4>
-                <ul className="space-y-2 text-muted">
-                  {packageData.description && typeof packageData.description === 'string' ? (
-                    JSON.parse(packageData.description).map((feature, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span>✓</span>
-                        <span>{feature}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <>
-                      <li className="flex gap-2"><span>✓</span><span>Akses penuh ke semua tools</span></li>
-                      <li className="flex gap-2"><span>✓</span><span>Support 24/7</span></li>
-                      <li className="flex gap-2"><span>✓</span><span>Unlimited Usage</span></li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </>
-          )}
+  if (!packageData) {
+    return (
+      <div className="payment-container">
+        <div className="error-container">
+          <h2>Paket tidak ditemukan</h2>
+          <p>Silakan kembali dan pilih paket yang valid</p>
+          <button onClick={() => navigate('/')} className="btn btn-primary">
+            Kembali ke Home
+          </button>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  const modalData = getModalData();
+
+  // ============================
+  // RENDER
+  // ============================
+  return (
+    <>
+      {/* Upgrade Warning Modal */}
+      {modalData && (
+        <UpgradeWarningModal
+          isOpen={showUpgradeWarning}
+          currentPackage={modalData.currentPackage}
+          newPackage={modalData.newPackage}
+          onConfirm={handleUpgradeConfirm}
+          onCancel={handleUpgradeCancel}
+          loading={loading}
+        />
+      )}
+
+      <div className="payment-container">
+        <div className="payment-wrapper">
+          {/* LEFT: PAYMENT FORM */}
+          <div className="payment-form-section">
+            <div className="form-header">
+              <h1>Konfirmasi Pembayaran</h1>
+              <p>Lengkapi data pembayaran Anda untuk melanjutkan</p>
+            </div>
+
+            {error && (
+              <div className="payment-error-alert animate-slide-down">
+                <span className="error-icon">⚠️</span>
+                <div>
+                  <strong>Terjadi Kesalahan</strong>
+                  <p>{error}</p>
+                </div>
+              </div>
+            )}
+
+            <PaymentForm
+              onSubmit={handlePaymentSubmit}
+              loading={loading}
+              selectedMethod={selectedMethod}
+            />
+          </div>
+
+          {/* RIGHT: PAYMENT SUMMARY */}
+          <div className="payment-summary-section">
+            <div className="summary-sticky">
+              {/* Summary Header */}
+              <div className="summary-header">
+                <h2>Ringkasan Pembayaran</h2>
+              </div>
+
+              {/* Package Info */}
+              {packageData && (
+                <>
+                  <div className="summary-content">
+                    {/* Package Card */}
+                    <div className="summary-card package-summary-card">
+                      <h3 className="card-title">📦 Paket</h3>
+                      <p className="package-name">{packageData.name}</p>
+                      <div className="package-meta">
+                        <div className="meta-item">
+                          <span className="meta-label">Durasi</span>
+                          <span className="meta-value">{packageData.duration_days} hari</span>
+                        </div>
+                        <div className="meta-item">
+                          <span className="meta-label">Harga</span>
+                          <span className="meta-value">
+                            {formatCurrency(packageData.price)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Active Package Warning */}
+                    {activePackage && (
+                      <div className="summary-card upgrade-info-card">
+                        <h3 className="card-title">⚠️ Paket Aktif</h3>
+                        <p className="active-package-name">{activePackage.package_name}</p>
+                        <div className="package-meta">
+                          <div className="meta-item">
+                            <span className="meta-label">Berakhir</span>
+                            <span className="meta-value">
+                              {formatDate(activePackage.expired_at)}
+                            </span>
+                          </div>
+                          <div className="meta-item">
+                            <span className="meta-label">Sisa Hari</span>
+                            <span className="meta-value">
+                              {getDaysRemaining(activePackage.expired_at)} hari
+                            </span>
+                          </div>
+                        </div>
+                        <div className="upgrade-notice">
+                          <p>Paket lama akan dihapus setelah Anda upgrade</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Features */}
+                    {packageData.description && (
+                      <div className="summary-card features-card">
+                        <h3 className="card-title">✨ Fitur Termasuk</h3>
+                        <ul className="features-list">
+                          {typeof packageData.description === 'string'
+                            ? JSON.parse(packageData.description).map((feature, idx) => (
+                                <li key={idx}>
+                                  <span className="check-icon">✓</span>
+                                  <span>{feature}</span>
+                                </li>
+                              ))
+                            : [
+                                'Akses penuh ke semua tools',
+                                'Support 24/7',
+                                'Unlimited Usage',
+                              ].map((feature, idx) => (
+                                <li key={idx}>
+                                  <span className="check-icon">✓</span>
+                                  <span>{feature}</span>
+                                </li>
+                              ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Total Price */}
+                  <div className="summary-total">
+                    <div className="total-row">
+                      <span>Subtotal</span>
+                      <span>{formatCurrency(packageData.price)}</span>
+                    </div>
+                    <div className="total-row">
+                      <span>PPN (0%)</span>
+                      <span>Rp 0</span>
+                    </div>
+                    <div className="total-divider"></div>
+                    <div className="total-row final">
+                      <span>Total Pembayaran</span>
+                      <span className="total-amount">
+                        {formatCurrency(packageData.price)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Security Badge */}
+                  <div className="security-badge">
+                    <span className="badge-icon">🔒</span>
+                    <div className="badge-text">
+                      <strong>Aman & Terpercaya</strong>
+                      <p>Transaksi Anda dilindungi dengan enkripsi tingkat bank</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

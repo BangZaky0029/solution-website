@@ -1,0 +1,215 @@
+/* =========================================
+FILE: src/components/modals/UpgradeWarningModal.css
+========================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ===== MODAL HEADER ===== */
+.modal-header {
+  background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+  padding: 30px;
+  text-align: center;
+  border-bottom: 1px solid #ffd699;
+}
+
+.warning-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: inline-block;
+  animation: pulse-soft 2s infinite;
+}
+
+.modal-header h2 {
+  font-size: 1.75rem;
+  color: #111827;
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ===== MODAL BODY ===== */
+.modal-body {
+  padding: 40px;
+}
+
+.info-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.info-section h4 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.package-info {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.package-info.current {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.package-info.new {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.package-name-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #4da6ff 0%, #2e8fe8 100%);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.package-name-badge.new {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.package-detail {
+  font-size: 0.95rem;
+  color: #374151;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.package-detail strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* ===== UPGRADE ARROW ===== */
+.upgrade-arrow {
+  display: flex;
+  justify-content: center;
+  color: #4da6ff;
+  animation: slideRight 1s ease-in-out infinite;
+}
+
+@keyframes slideRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
+/* ===== WARNING MESSAGE ===== */
+.warning-message {
+  background: linear-gradient(135deg, #fef08a 0%, #fef3c7 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.warning-icon-small {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.warning-text p {
+  font-size: 0.95rem;
+  color: #78350f;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.warning-text strong {
+  color: #92400e;
+  font-weight: 700;
+}
+
+/* ===== MODAL FOOTER ===== */
+.modal-footer {
+  background: #f9fafb;
+  padding: 20px 40px;
+  border-top: 1px solid #e5e7eb;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .modal-content {
+    max-width: 90vw;
+  }
+
+  .modal-header {
+    padding: 24px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .modal-body {
+    padding: 24px;
+  }
+
+  .info-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .upgrade-arrow {
+    transform: rotate(90deg);
+    margin: 8px 0;
+  }
+
+  .modal-footer {
+    grid-template-columns: 1fr;
+    padding: 16px 24px;
+  }
+
+  .package-name-badge {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+
+  .package-detail {
+    font-size: 0.9rem;
+  }
+}

@@ -29,8 +29,8 @@ export const SUBSCRIPTION_STATUS = {
 export const FAQ_DATA = [
   {
     id: 1,
-    question: 'Apa itu Gateway APTO?',
-    answer: 'Gateway APTO adalah platform pembayaran terpadu yang memudahkan pengguna untuk mengakses berbagai tools dan features dengan sistem berlangganan.',
+    question: 'Apa itu Gateway SOLUTION?',
+    answer: 'Gateway SOLUTION adalah platform pembayaran terpadu yang memudahkan pengguna untuk mengakses berbagai tools dan features dengan sistem berlangganan.',
   },
   {
     id: 2,
