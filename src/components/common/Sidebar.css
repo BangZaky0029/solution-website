@@ -39,6 +39,16 @@ Modern Mobile Sidebar Styles
   right: 0;
 }
 
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+
 /* ===== SIDEBAR HEADER ===== */
 .sidebar-header {
   display: flex;

@@ -8,7 +8,7 @@ import Button from '../common/Button';
 import logo from '../../assets/images/nuansaLogo.png';
 
 const Hero = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();  
 
   return (
     <section className="hero-section">
@@ -20,11 +20,11 @@ const Hero = () => {
           <div className="hero-buttons">
             {isAuthenticated ? (
               <>
-                <Link to="/payment">
+                <a href="#pricing">
                   <Button variant="primary" size="lg">
                     Upgrade Sekarang →
                   </Button>
-                </Link>
+                </a>
                 <Link to="/profile">
                   <Button variant="outline" size="lg">
                     Lihat Profile

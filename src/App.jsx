@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/App.jsx - UPDATED
+// FILE: src/App.jsx - FIXED
 // =========================================
 
 import { Routes, Route } from 'react-router-dom';
@@ -19,13 +19,16 @@ import PaymentConfirmation from './pages/Payment/PaymentConfirmation';
 import FeaturesPage from './pages/Features/FeaturesPage';
 import NotFound from './pages/NotFound';
 
-// Info Pages
-import About from './pages/Info/About';
-import { Blog } from './pages/Info/Blog';
-import { Contact } from './pages/Info/Contact';
-import { Privacy } from './pages/Info/Privacy';
-import { Terms } from './pages/Info/Terms';
-import { Security } from './pages/Info/Security';
+// Info Pages (✅ from index.js)
+import {
+  About,
+  Blog,
+  Contact,
+  Privacy,
+  Terms,
+  Security,
+  FAQ
+} from './pages/Info';
 
 import './App.css';
 
@@ -45,7 +48,7 @@ function App() {
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
             <Route path="/features" element={<FeaturesPage />} />
-            
+
             {/* Info Pages */}
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
@@ -53,7 +56,8 @@ function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/security" element={<Security />} />
-            
+            <Route path="/faq" element={<FAQ />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

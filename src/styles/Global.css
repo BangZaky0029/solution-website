@@ -1,7 +1,6 @@
 /* =========================================
 FILE: src/styles/Global.css - UPDATED WITH BLUE SOFT THEME
 ========================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
@@ -446,9 +445,6 @@ textarea::placeholder {
 FILE: src/styles/Global.css - UPDATED
 Modern Design with Blue Soft Theme
 ========================================= */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
 /* ===== HEADER STYLES ===== */
 .header-modern {
   position: fixed;
@@ -474,7 +470,7 @@ Modern Design with Blue Soft Theme
 }
 
 .header-logo img {
-  height: 40px;
+  height: 160px;
   transition: transform 0.3s;
 }
 
@@ -618,6 +614,32 @@ Modern Design with Blue Soft Theme
   max-width: 600px;
   margin: 0 auto;
 }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 
 .features-grid-modern {
   display: grid;
