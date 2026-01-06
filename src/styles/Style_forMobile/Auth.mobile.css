@@ -1,13 +1,375 @@
 /* =========================================
-FILE: src/styles/Style_forMobile/Auth.mobile.css
+FILE: src/styles/Style_forMobile/Auth.mobile.css - ENHANCED
 ========================================= */
 
-@media (max-width: 640px) {
+/* Tablet & Small Desktop */
+@media (max-width: 768px) {
   .auth-card {
-    padding: 30px;
+    padding: 40px 30px;
+    max-width: 420px;
+  }
+
+  .auth-header h2 {
+    font-size: 1.75rem;
+  }
+
+  .trial-content {
+    gap: 12px;
+  }
+
+  .trial-icon {
+    font-size: 2rem;
+  }
+
+  .trial-title {
+    font-size: 1rem;
+  }
+
+  .trial-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .welcome-banner h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Mobile Devices */
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 16px;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .auth-container::before,
+  .auth-container::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  .auth-card {
+    padding: 32px 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    animation: slideUpMobile 0.5s ease-out;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .auth-header {
+    margin-bottom: 32px;
   }
 
   .auth-header h2 {
     font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+
+  .auth-header p {
+    font-size: 0.9rem;
+  }
+
+  /* Trial Banner Mobile */
+  .trial-banner {
+    padding: 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 4px;
+  }
+
+  .trial-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .trial-icon {
+    font-size: 2rem;
+  }
+
+  .trial-title {
+    font-size: 0.95rem;
+  }
+
+  .trial-subtitle {
+    font-size: 0.8rem;
+  }
+
+  /* Welcome Banner Mobile */
+  .welcome-banner {
+    padding: 20px 16px;
+    margin-bottom: 4px;
+  }
+
+  .welcome-banner h3 {
+    font-size: 1.25rem;
+  }
+
+  .welcome-banner p {
+    font-size: 0.85rem;
+  }
+
+  /* Form Spacing */
+  .auth-form {
+    gap: 20px;
+  }
+
+  /* Form Group Mobile */
+  .form-group label {
+    font-size: 0.9rem;
+  }
+
+  .form-group input {
+    padding: 13px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: var(--radius-md);
+  }
+
+  .input-wrapper.with-icon input {
+    padding-left: 40px;
+  }
+
+  .input-icon {
+    left: 12px;
+  }
+
+  /* Password Toggle Mobile */
+  .toggle-password {
+    right: 12px;
+    padding: 6px;
+  }
+
+  /* Password Strength Mobile */
+  .password-strength {
+    gap: 10px;
+  }
+
+  .strength-bar {
+    height: 5px;
+  }
+
+  .strength-text {
+    font-size: 0.8rem;
+  }
+
+  /* Form Options Mobile */
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .checkbox-label {
+    font-size: 0.85rem;
+  }
+
+  .forgot-link {
+    font-size: 0.85rem;
+    align-self: flex-end;
+  }
+
+  /* Alert Mobile */
+  .alert {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+
+  /* Error Message Mobile */
+  .error-message {
+    font-size: 0.8rem;
+  }
+
+  .match-success,
+  .match-error {
+    font-size: 0.8rem;
+  }
+
+  /* Submit Button Mobile */
+  .submit-button {
+    padding: 14px 20px;
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+
+  /* Divider Mobile */
+  .divider span {
+    font-size: 0.85rem;
+    padding: 0 12px;
+  }
+
+  /* Footer Mobile */
+  .auth-footer {
+    margin-top: 12px;
+  }
+
+  .auth-footer p {
+    font-size: 0.9rem;
+  }
+
+  .auth-link {
+    font-size: 0.95rem;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 375px) {
+  .auth-container {
+    padding: 12px;
+    padding-top: 32px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
+
+  .auth-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .trial-banner {
+    padding: 14px;
+  }
+
+  .trial-icon {
+    font-size: 1.75rem;
+  }
+
+  .trial-title {
+    font-size: 0.9rem;
+  }
+
+  .trial-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .welcome-banner {
+    padding: 18px 14px;
+  }
+
+  .welcome-banner h3 {
+    font-size: 1.15rem;
+  }
+
+  .form-group input {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .input-wrapper.with-icon input {
+    padding-left: 38px;
+  }
+
+  .submit-button {
+    padding: 13px 18px;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .auth-container {
+    padding: 20px;
+    align-items: center;
+  }
+
+  .auth-card {
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+  }
+
+  .auth-header {
+    margin-bottom: 24px;
+  }
+
+  .auth-form {
+    gap: 16px;
+  }
+
+  .trial-banner,
+  .welcome-banner {
+    padding: 12px;
+  }
+
+  .form-group input {
+    padding: 11px 14px;
+  }
+}
+
+/* Touch Interactions Enhancement */
+@media (hover: none) and (pointer: coarse) {
+  .toggle-password {
+    padding: 10px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .auth-link,
+  .forgot-link {
+    padding: 8px 4px;
+  }
+
+  .checkbox-label {
+    padding: 8px 0;
+  }
+
+  /* Larger tap targets */
+  .form-group input:focus {
+    border-width: 2.5px;
+  }
+
+  /* Remove hover effects on touch devices */
+  .form-group input:hover {
+    border-color: var(--gray-200);
+  }
+
+  .toggle-password:hover {
+    background: none;
+    color: #9ca3af;
+  }
+
+  .submit-button:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode styles here if needed */
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .form-group input {
+    border-width: 2px;
+  }
+
+  .form-group input:focus {
+    border-width: 3px;
+  }
+
+  .trial-banner,
+  .welcome-banner {
+    border: 2px solid currentColor;
   }
 }

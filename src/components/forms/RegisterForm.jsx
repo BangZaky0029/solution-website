@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/components/forms/RegisterForm.jsx - UPDATED
+// FILE: src/components/forms/RegisterForm.jsx - ENHANCED
 // =========================================
 
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useToast } from '../../hooks/useToast';
 import { validateForm, validatePhone } from '../../utils/validation';
 import { getErrorMessage } from '../../utils/helpers';
 import Button from '../common/Button';
+import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -20,14 +21,52 @@ const RegisterForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({ level: 0, text: '', color: '' });
+  const [focusedField, setFocusedField] = useState('');
+  
   const { register } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  // Fungsi untuk menghitung kekuatan password
+  const calculatePasswordStrength = (password) => {
+    if (!password) return { level: 0, text: '', color: '' };
+    
+    let strength = 0;
+    const checks = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      numbers: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password)
+    };
+
+    if (checks.length) strength += 20;
+    if (checks.uppercase) strength += 20;
+    if (checks.lowercase) strength += 20;
+    if (checks.numbers) strength += 20;
+    if (checks.special) strength += 20;
+
+    if (strength <= 40) {
+      return { level: strength, text: 'Lemah', color: '#ef4444' };
+    } else if (strength <= 70) {
+      return { level: strength, text: 'Cukup Kuat', color: '#f59e0b' };
+    } else {
+      return { level: strength, text: 'Kuat', color: '#10b981' };
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
+
+    // Update password strength saat user mengetik password
+    if (name === 'password') {
+      setPasswordStrength(calculatePasswordStrength(value));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -52,7 +91,6 @@ const RegisterForm = () => {
     try {
       const response = await register(formData.name, formData.email, formData.phone, formData.password);
       
-      // ✅ Show trial activation success
       addToast('🎉 Registrasi berhasil! Trial 3 hari diaktifkan!', 'success', 4000);
       
       setTimeout(() => {
@@ -67,101 +105,198 @@ const RegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      {/* Trial Info Banner */}
-      <div className="bg-gradient-primary text-white p-4 rounded-lg mb-6 animate-fade-in">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl">🎁</span>
+      {/* Trial Info Banner with enhanced animation */}
+      <div className="trial-banner">
+        <div className="trial-content">
+          <span className="trial-icon">🎁</span>
           <div>
-            <p className="font-bold">Bonus Trial 3 Hari!</p>
-            <p className="text-sm opacity-90">Dapatkan akses gratis semua fitur premium</p>
+            <p className="trial-title">Bonus Trial 3 Hari!</p>
+            <p className="trial-subtitle">Dapatkan akses gratis semua fitur premium</p>
           </div>
         </div>
       </div>
 
-      <div className="form-group">
+      {/* Name Field */}
+      <div className={`form-group ${focusedField === 'name' ? 'focused' : ''}`}>
         <label htmlFor="name">Nama Lengkap</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="John Doe"
-          disabled={loading}
-        />
-        {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+        <div className="input-wrapper">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('name')}
+            onBlur={() => setFocusedField('')}
+            placeholder="John Doe"
+            disabled={loading}
+          />
+        </div>
+        {errors.name && (
+          <span className="error-message">
+            <XCircle size={14} /> {errors.name}
+          </span>
+        )}
       </div>
 
-      <div className="form-group">
+      {/* Email Field */}
+      <div className={`form-group ${focusedField === 'email' ? 'focused' : ''}`}>
         <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="your@email.com"
-          disabled={loading}
-        />
-        {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+        <div className="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('email')}
+            onBlur={() => setFocusedField('')}
+            placeholder="your@email.com"
+            disabled={loading}
+          />
+        </div>
+        {errors.email && (
+          <span className="error-message">
+            <XCircle size={14} /> {errors.email}
+          </span>
+        )}
       </div>
 
-      <div className="form-group">
+      {/* Phone Field */}
+      <div className={`form-group ${focusedField === 'phone' ? 'focused' : ''}`}>
         <label htmlFor="phone">Nomor WhatsApp</label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          placeholder="08123456789"
-          disabled={loading}
-        />
-        {errors.phone && <span className="text-red-500 text-sm">{errors.phone}</span>}
+        <div className="input-wrapper">
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('phone')}
+            onBlur={() => setFocusedField('')}
+            placeholder="08123456789"
+            disabled={loading}
+          />
+        </div>
+        {errors.phone && (
+          <span className="error-message">
+            <XCircle size={14} /> {errors.phone}
+          </span>
+        )}
       </div>
 
-      <div className="form-group">
+      {/* Password Field with Strength Indicator */}
+      <div className={`form-group ${focusedField === 'password' ? 'focused' : ''}`}>
         <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="••••••••"
-          disabled={loading}
-        />
-        {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
+        <div className="input-wrapper password-wrapper">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('password')}
+            onBlur={() => setFocusedField('')}
+            placeholder="••••••••"
+            disabled={loading}
+          />
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex="-1"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        
+        {/* Password Strength Indicator */}
+        {formData.password && (
+          <div className="password-strength">
+            <div className="strength-bar">
+              <div 
+                className="strength-fill" 
+                style={{ 
+                  width: `${passwordStrength.level}%`,
+                  backgroundColor: passwordStrength.color,
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            </div>
+            <span className="strength-text" style={{ color: passwordStrength.color }}>
+              {passwordStrength.text}
+            </span>
+          </div>
+        )}
+        
+        {errors.password && (
+          <span className="error-message">
+            <XCircle size={14} /> {errors.password}
+          </span>
+        )}
       </div>
 
-      <div className="form-group">
+      {/* Confirm Password Field */}
+      <div className={`form-group ${focusedField === 'confirmPassword' ? 'focused' : ''}`}>
         <label htmlFor="confirmPassword">Konfirmasi Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          placeholder="••••••••"
-          disabled={loading}
-        />
-        {errors.confirmPassword && <span className="text-red-500 text-sm">{errors.confirmPassword}</span>}
+        <div className="input-wrapper password-wrapper">
+          <input
+            type={showConfirmPassword ? 'text' : 'password'}
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            onFocus={() => setFocusedField('confirmPassword')}
+            onBlur={() => setFocusedField('')}
+            placeholder="••••••••"
+            disabled={loading}
+          />
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            tabIndex="-1"
+          >
+            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
+        
+        {/* Password Match Indicator */}
+        {formData.confirmPassword && (
+          <div className="password-match">
+            {formData.password === formData.confirmPassword ? (
+              <span className="match-success">
+                <CheckCircle size={14} /> Password cocok
+              </span>
+            ) : (
+              <span className="match-error">
+                <XCircle size={14} /> Password tidak cocok
+              </span>
+            )}
+          </div>
+        )}
+        
+        {errors.confirmPassword && (
+          <span className="error-message">
+            <XCircle size={14} /> {errors.confirmPassword}
+          </span>
+        )}
       </div>
 
       <Button
         type="submit"
         variant="primary"
         size="lg"
-        className="w-full"
+        className="w-full submit-button"
         loading={loading}
         disabled={loading}
       >
-        Daftar & Aktifkan Trial
+        {loading ? 'Memproses...' : 'Daftar & Aktifkan Trial'}
       </Button>
 
       <div className="auth-footer">
         <p>Sudah punya akun?</p>
-        <Link to="/login">Login sekarang</Link>
+        <Link to="/login" className="auth-link">Login sekarang</Link>
       </div>
     </form>
   );
