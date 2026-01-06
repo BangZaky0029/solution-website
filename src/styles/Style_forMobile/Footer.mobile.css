@@ -1,0 +1,120 @@
+/* =========================================
+FILE: src/styles/Style_forMobile/Footer.mobile.css
+FIX: FULL WIDTH FOOTER ON MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+  /* Pastikan footer full width, tanpa dibatasi container lain */
+  footer {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding-top: 48px;
+    padding-bottom: 32px;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+  }
+
+  /* Hilangkan padding dari wrapper dalam agar konten bisa lebih lebar */
+  footer > div {
+    width: 100%;
+    max-width: none;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Grid tetap 1 kolom */
+  footer .grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  /* Logo sedikit lebih kecil */
+  footer .w-32 {
+    width: 120px !important;
+    margin-bottom: 16px;
+  }
+
+  footer .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  footer h4 {
+    font-size: 1.0625rem;
+    margin-bottom: 16px;
+    color: #e2e8f0 !important;
+  }
+
+  footer ul li + li {
+    margin-top: 12px;
+  }
+
+  footer ul li a {
+    font-size: 0.9375rem;
+    display: inline-block;
+    padding: 4px 0;
+  }
+
+  footer .border-t {
+    margin-top: 40px;
+    padding-top: 24px;
+  }
+
+  footer .text-center p {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  footer {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 40px;
+    padding-bottom: 28px;
+  }
+
+  footer .grid {
+    gap: 32px;
+  }
+
+  footer .w-32 {
+    width: 100px !important;
+  }
+
+  footer .text-sm {
+    font-size: 0.8125rem;
+  }
+
+  footer h4 {
+    font-size: 1rem;
+  }
+
+  footer ul li a {
+    font-size: 0.875rem;
+  }
+
+  footer .border-t {
+    margin-top: 32px;
+    padding-top: 20px;
+  }
+
+  footer .text-center p {
+    font-size: 0.75rem;
+  }
+}
+
+/* Tablet kecil: 2 kolom, brand full */
+@media (min-width: 569px) and (max-width: 768px) {
+  footer .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  footer .grid > div:first-child {
+    grid-column: span 2;
+  }
+}
