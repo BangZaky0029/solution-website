@@ -160,7 +160,7 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
         </div>
 
         <div className="sidebar-footer">
-          <p>© 2025 Gateway NUANSA</p>
+          <p>2022 nuansasolution.id. | All rights reserved.</p>
           <p>v1.0.0</p>
         </div>
       </div>
