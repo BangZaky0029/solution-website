@@ -37,7 +37,7 @@ export const paymentController = {
       formData.append('payment_id', paymentId);
       formData.append('email', email);
       formData.append('phone', phone);
-      formData.append('proof_image', proofFile);
+      formData.append('proof', proofFile);
 
       const response = await api.post('/payment/confirm', formData, {
         headers: {
