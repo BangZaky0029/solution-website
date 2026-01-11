@@ -65,7 +65,7 @@ export const featureAccessService = {
   getFeatureAccessStatus: async () => {
     try {
       const response = await api.get('/users/feature-access-status');
-      return response.data || {};
+      return response.data?.data || {};
     } catch (error) {
       console.error('Error getting feature access status:', error);
       return {};

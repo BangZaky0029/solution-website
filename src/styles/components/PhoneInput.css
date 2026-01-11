@@ -1,0 +1,81 @@
+/* =========================================
+FILE: src/styles/components/PhoneInput.css - NEW
+Enhanced Phone Input Styles
+========================================= */
+
+.phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.phone-input-wrapper.focused {
+  border-color: #4da6ff;
+  box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.1);
+  background: #fafafa;
+}
+
+.phone-input-wrapper.error {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.phone-prefix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+  height: 48px;
+}
+
+.phone-prefix .flag {
+  font-size: 1.25rem;
+}
+
+.phone-prefix .code {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.phone-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  font-size: 1rem;
+  background: transparent;
+  min-width: 0;
+}
+
+.phone-input:disabled {
+  background: #f9fafb;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.phone-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .phone-prefix {
+    padding: 0 8px;
+  }
+
+  .phone-prefix .code {
+    font-size: 0.875rem;
+  }
+
+  .phone-input {
+    padding: 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
