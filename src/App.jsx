@@ -1,3 +1,8 @@
+// =========================================
+// FILE: src/App.jsx - UPGRADED
+// Enhanced with Forgot Password Routes
+// =========================================
+
 import { Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './hooks/useToast';
 
@@ -10,6 +15,7 @@ import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import VerifyOTP from './pages/Auth/VerifyOTP';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 import Profile from './pages/Profile/Profile';
 import PaymentPage from './pages/Payment/PaymentPage';
 import PaymentConfirmation from './pages/Payment/PaymentConfirmation';
@@ -35,22 +41,15 @@ function App() {
       <Routes>
 
         {/* ================= AUTH (NO HEADER / FOOTER) ================= */}
-        <Route
-          element={
-            <AuthLayout />
-          }
-        >
+        <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
         {/* ================= MAIN (WITH HEADER / FOOTER) ================= */}
-        <Route
-          element={
-            <MainLayout />
-          }
-        >
+        <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/payment" element={<PaymentPage />} />

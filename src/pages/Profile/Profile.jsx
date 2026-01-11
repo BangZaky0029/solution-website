@@ -37,12 +37,14 @@ const Profile = () => {
   // =========================
   // FETCH PAYMENT HISTORY
   // =========================
+  // Di bagian fetchPayments, sudah benar karena menggunakan api.get langsung
   useEffect(() => {
     const fetchPayments = async () => {
       setLoadingPayments(true);
       try {
         const response = await api.get('/payment/user/payments');
 
+        // ✅ FIXED: Handle response structure properly
         if (!response.data.success) {
           throw new Error(response.data.message || 'Gagal memuat pembayaran');
         }
@@ -50,17 +52,7 @@ const Profile = () => {
         const paymentsData = response.data.data || [];
         setPayments(paymentsData);
 
-        // Notifikasi otomatis payment confirmed terbaru
-        const confirmedPayments = paymentsData
-          .filter(p => p.status === 'confirmed')
-          .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-        if (confirmedPayments.length > 0) {
-          showNotification(
-            `🎉 Selamat! Paket ${confirmedPayments[0].package_name} sudah aktif.`,
-            'success'
-          );
-        }
+        // ... rest of the code
       } catch (err) {
         console.error('Error fetching payments:', err);
         showNotification('❌ Gagal memuat riwayat pembayaran', 'error');

@@ -1,14 +1,16 @@
 // =========================================
-// FILE: src/components/forms/RegisterForm.jsx - ENHANCED
+// FILE: src/components/forms/RegisterForm.jsx - UPGRADED
+// Enhanced with Phone Validation & Better UX
 // =========================================
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
-import { validateForm, validatePhone } from '../../utils/validation';
+import { validateForm, validatePhone, getPasswordStrength } from '../../utils/validation';
 import { getErrorMessage } from '../../utils/helpers';
 import Button from '../common/Button';
+import PhoneInput from '../common/PhoneInput';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 const RegisterForm = () => {
@@ -27,77 +29,79 @@ const RegisterForm = () => {
   const [focusedField, setFocusedField] = useState('');
   
   const { register } = useAuth();
-  const { addToast } = useToast();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
-  // Fungsi untuk menghitung kekuatan password
-  const calculatePasswordStrength = (password) => {
-    if (!password) return { level: 0, text: '', color: '' };
-    
-    let strength = 0;
-    const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      numbers: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password)
-    };
-
-    if (checks.length) strength += 20;
-    if (checks.uppercase) strength += 20;
-    if (checks.lowercase) strength += 20;
-    if (checks.numbers) strength += 20;
-    if (checks.special) strength += 20;
-
-    if (strength <= 40) {
-      return { level: strength, text: 'Lemah', color: '#ef4444' };
-    } else if (strength <= 70) {
-      return { level: strength, text: 'Cukup Kuat', color: '#f59e0b' };
-    } else {
-      return { level: strength, text: 'Kuat', color: '#10b981' };
-    }
-  };
-
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
 
-    // Update password strength saat user mengetik password
+    // Update password strength
     if (name === 'password') {
-      setPasswordStrength(calculatePasswordStrength(value));
+      setPasswordStrength(getPasswordStrength(value));
     }
   };
 
+  // Handle phone input change
+  const handlePhoneChange = (value) => {
+    setFormData(prev => ({ ...prev, phone: value }));
+    setErrors(prev => ({ ...prev, phone: '' }));
+  };
+
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate form
     const validationErrors = validateForm(formData, ['name', 'email', 'phone', 'password']);
     
+    // Additional phone validation
     if (!validatePhone(formData.phone)) {
-      validationErrors.phone = 'Nomor telepon tidak valid';
+      validationErrors.phone = 'Format nomor WhatsApp tidak valid. Gunakan format: 08xxx atau +628xxx';
     }
 
+    // Password confirmation
     if (formData.password !== formData.confirmPassword) {
       validationErrors.confirmPassword = 'Password tidak cocok';
     }
 
+    // Check if there are errors
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      
+      // Show first error as toast
+      const firstError = Object.values(validationErrors)[0];
+      showToast(firstError, 'error');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await register(formData.name, formData.email, formData.phone, formData.password);
+      const response = await register(
+        formData.name, 
+        formData.email, 
+        formData.phone, 
+        formData.password
+      );
       
-      addToast('🎉 Registrasi berhasil! Trial 3 hari diaktifkan!', 'success', 4000);
+      // Success
+      showToast('🎉 Registrasi berhasil! Trial 3 hari diaktifkan!', 'success', 4000);
       
       setTimeout(() => {
         navigate('/verify-otp', { state: { email: formData.email } });
       }, 500);
     } catch (error) {
-      addToast(getErrorMessage(error), 'error');
+      const errorMessage = getErrorMessage(error);
+      showToast(errorMessage, 'error');
+      
+      // Handle specific errors
+      if (errorMessage.includes('Email')) {
+        setErrors({ email: errorMessage });
+      } else if (errorMessage.includes('WhatsApp') || errorMessage.includes('nomor')) {
+        setErrors({ phone: errorMessage });
+      }
     } finally {
       setLoading(false);
     }
@@ -105,7 +109,7 @@ const RegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      {/* Trial Info Banner with enhanced animation */}
+      {/* Trial Info Banner */}
       <div className="trial-banner">
         <div className="trial-content">
           <span className="trial-icon">🎁</span>
@@ -130,6 +134,7 @@ const RegisterForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="John Doe"
             disabled={loading}
+            className={errors.name ? 'error' : ''}
           />
         </div>
         {errors.name && (
@@ -153,6 +158,7 @@ const RegisterForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="your@email.com"
             disabled={loading}
+            className={errors.email ? 'error' : ''}
           />
         </div>
         {errors.email && (
@@ -162,27 +168,24 @@ const RegisterForm = () => {
         )}
       </div>
 
-      {/* Phone Field */}
+      {/* Phone Field with PhoneInput Component */}
       <div className={`form-group ${focusedField === 'phone' ? 'focused' : ''}`}>
         <label htmlFor="phone">Nomor WhatsApp</label>
-        <div className="input-wrapper">
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            onFocus={() => setFocusedField('phone')}
-            onBlur={() => setFocusedField('')}
-            placeholder="08123456789"
-            disabled={loading}
-          />
-        </div>
+        <PhoneInput
+          value={formData.phone}
+          onChange={handlePhoneChange}
+          disabled={loading}
+          error={errors.phone}
+          placeholder="8123456789"
+        />
         {errors.phone && (
           <span className="error-message">
             <XCircle size={14} /> {errors.phone}
           </span>
         )}
+        <p className="text-muted text-xs mt-2">
+          Format: 08xxx atau +628xxx. Nomor ini akan digunakan untuk verifikasi OTP.
+        </p>
       </div>
 
       {/* Password Field with Strength Indicator */}
@@ -199,6 +202,7 @@ const RegisterForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="••••••••"
             disabled={loading}
+            className={errors.password ? 'error' : ''}
           />
           <button
             type="button"
@@ -250,6 +254,7 @@ const RegisterForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="••••••••"
             disabled={loading}
+            className={errors.confirmPassword ? 'error' : ''}
           />
           <button
             type="button"

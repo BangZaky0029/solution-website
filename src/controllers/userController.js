@@ -1,45 +1,47 @@
 // =========================================
-// FILE: src/controllers/userController.js
+// FILE: src/controllers/userController.js - FIXED
 // =========================================
 
 import api from '../services/api';
 
 export const userController = {
-  // Get user profile
+  // ✅ FIXED: Handle response structure properly
   getProfile: async () => {
     try {
       const response = await api.get('/users/me');
-      return response.data;
+      // Backend sends { success: true, data: {...} }
+      return response.data.data || response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  // Update user profile
+  // ✅ FIXED: Handle response structure
   updateProfile: async (userData) => {
     try {
       const response = await api.put('/users/me', userData);
-      return response.data;
+      return response.data.data || response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  // Get user tokens/subscriptions
+  // ✅ FIXED: Handle response structure
   getUserTokens: async () => {
     try {
       const response = await api.get('/users/tokens');
-      return response.data;
+      // Backend sends { success: true, data: [...] }
+      return response.data.data || response.data;
     } catch (error) {
       throw error;
     }
   },
 
-  // Get user subscription status
+  // ✅ FIXED: Handle response structure
   getSubscriptionStatus: async () => {
     try {
       const response = await api.get('/users/subscription-status');
-      return response.data;
+      return response.data.data || response.data;
     } catch (error) {
       throw error;
     }

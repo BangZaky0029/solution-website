@@ -1,4 +1,6 @@
-// C:\codingVibes\nuansasolution\.mainweb\payment-tools\gateway_apto-website\src\hooks\useAuth.jsx
+// =========================================
+// FILE: src/hooks/useAuth.jsx - FIXED
+// =========================================
 
 import { useState, useEffect, useContext, createContext } from 'react';
 import { authController } from '../controllers/authController';
@@ -18,7 +20,8 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
-      const userData = await userController.getProfile(); // ✅ BENAR
+      // ✅ FIXED: userController.getProfile sudah handle response structure
+      const userData = await userController.getProfile();
       setUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
@@ -39,7 +42,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await authController.login(email, password);
-      const userData = await userController.getProfile(); // ✅ BENAR
+      // ✅ FIXED: getProfile sudah handle response structure
+      const userData = await userController.getProfile();
       setUser(userData);
       setIsAuthenticated(true);
       return res;
@@ -70,5 +74,3 @@ export const useAuth = () => {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 };
-
-console.log('AuthProvider rendered');

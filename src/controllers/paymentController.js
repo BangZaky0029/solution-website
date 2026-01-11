@@ -6,7 +6,7 @@
 import api from '../services/api';
 
 export const paymentController = {
-  // ✅ CREATE PAYMENT - FIXED
+  // ✅ CREATE PAYMENT - Already correct
   createPayment: async (packageId, paymentMethod, forceUpgrade = false) => {
     try {
       const response = await api.post('/payment/create', {
@@ -15,12 +15,10 @@ export const paymentController = {
         forceUpgrade,
       });
 
-      // Backend sekarang selalu kirim success flag
       return response.data;
     } catch (error) {
       console.error('Error creating payment:', error);
       
-      // Handle error response
       if (error.response?.data) {
         return {
           success: false,
@@ -32,7 +30,7 @@ export const paymentController = {
     }
   },
 
-  // ✅ CONFIRM PAYMENT - FIXED
+  // ✅ CONFIRM PAYMENT - Already correct
   confirmPayment: async (paymentId, email, phone, proofFile) => {
     try {
       const formData = new FormData();
@@ -47,12 +45,10 @@ export const paymentController = {
         },
       });
 
-      // Backend sekarang selalu kirim success flag
       return response.data;
     } catch (error) {
       console.error('Error confirming payment:', error);
       
-      // Handle error response
       if (error.response?.data) {
         return {
           success: false,
@@ -64,7 +60,7 @@ export const paymentController = {
     }
   },
 
-  // ✅ GET PAYMENT STATUS
+  // ✅ GET PAYMENT STATUS - Already correct
   getPaymentStatus: async (paymentId) => {
     try {
       const response = await api.get(`/payment/${paymentId}`);
@@ -75,12 +71,12 @@ export const paymentController = {
     }
   },
 
-  // ✅ GET USER PAYMENTS
+  // ✅ FIXED: Handle response structure properly
   getUserPayments: async () => {
     try {
       const response = await api.get('/payment/user/payments');
       
-      // Handle response structure
+      // Backend sends { success: true, data: [...] }
       if (response.data.success && response.data.data) {
         return response.data.data;
       }
@@ -92,8 +88,7 @@ export const paymentController = {
     }
   },
 
-  // ✅ CHECK ACTIVE PACKAGE - FIXED
-  // Frontend sudah benar, backend endpoint sudah difix
+  // ✅ CHECK ACTIVE PACKAGE - Already correct
   checkActivePackage: async () => {
     try {
       const response = await api.get('/payment/check-active-package');
@@ -101,7 +96,6 @@ export const paymentController = {
     } catch (error) {
       console.error('Error checking active package:', error);
       
-      // Return default response jika error
       return {
         success: false,
         hasActive: false,
@@ -110,25 +104,25 @@ export const paymentController = {
     }
   },
 
-  // ✅ GET USER TOKENS
+  // ✅ FIXED: Handle response structure
   getUserTokens: async () => {
     try {
       const response = await api.get('/users/tokens');
-      return response.data;
+      // Backend sends { success: true, data: [...] }
+      return response.data.data || response.data;
     } catch (error) {
       console.error('Error getting user tokens:', error);
       throw error;
     }
   },
 
-  // ✅ DOWNLOAD INVOICE
+  // ✅ DOWNLOAD INVOICE - Already correct
   downloadInvoice: async (paymentId) => {
     try {
       const response = await api.get(`/payment/${paymentId}/invoice`, {
         responseType: 'blob'
       });
       
-      // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;

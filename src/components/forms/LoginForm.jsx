@@ -1,10 +1,12 @@
 // =========================================
-// FILE: src/components/forms/LoginForm.jsx - ENHANCED
+// FILE: src/components/forms/LoginForm.jsx - UPGRADED
+// Enhanced with Forgot Password Link
 // =========================================
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import { validateForm } from '../../utils/validation';
 import { getErrorMessage } from '../../utils/helpers';
 import Button from '../common/Button';
@@ -15,46 +17,59 @@ const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [generalError, setGeneralError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   
   const { login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
-    setGeneralError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGeneralError('');
 
     // Validasi form
     const validationErrors = validateForm(formData, ['email', 'password']);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      
+      // Show first error
+      const firstError = Object.values(validationErrors)[0];
+      showToast(firstError, 'error');
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await login(formData.email, formData.password);
+      await login(formData.email, formData.password);
       
-      // Simpan remember me preference jika diperlukan
+      // Simpan remember me preference
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
       
-      navigate('/profile');
+      showToast('✅ Login berhasil! Selamat datang kembali.', 'success');
+      
+      setTimeout(() => {
+        navigate('/profile');
+      }, 300);
     } catch (err) {
-      const msg = err?.response?.data?.message ?? err.message ?? 'Terjadi kesalahan';
-      setGeneralError(msg);
+      const msg = getErrorMessage(err);
+      showToast(msg, 'error');
+      
+      // Handle specific errors
+      if (msg.includes('tidak ditemukan')) {
+        setErrors({ email: msg });
+      } else if (msg.includes('Password')) {
+        setErrors({ password: msg });
+      }
     } finally {
       setLoading(false);
     }
@@ -67,14 +82,6 @@ const LoginForm = () => {
         <h3>Selamat Datang Kembali! 👋</h3>
         <p>Silakan login untuk melanjutkan</p>
       </div>
-
-      {/* General Error Alert */}
-      {generalError && (
-        <div className="alert alert-error">
-          <AlertCircle size={20} />
-          <span>{generalError}</span>
-        </div>
-      )}
 
       {/* Email Field */}
       <div className={`form-group ${focusedField === 'email' ? 'focused' : ''}`}>
@@ -91,6 +98,7 @@ const LoginForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="your@email.com"
             disabled={loading}
+            className={errors.email ? 'error' : ''}
           />
         </div>
         {errors.email && (
@@ -115,6 +123,7 @@ const LoginForm = () => {
             onBlur={() => setFocusedField('')}
             placeholder="••••••••"
             disabled={loading}
+            className={errors.password ? 'error' : ''}
           />
           <button
             type="button"
