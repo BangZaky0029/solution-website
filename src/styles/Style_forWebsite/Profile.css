@@ -416,3 +416,13 @@ FILE: src/styles/Style_forWebsite/Profile.css - UPDATED
     transform: translateY(0);
   }
 }
+
+.feature-access-card.clickable {
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.feature-access-card.clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}

@@ -23,6 +23,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const { data: userTokens, loading: tokensLoading } = useFetch('/users/tokens');
   const { packageInfo, accessStatus, loading: accessLoading } = useFeatureAccess();
+  const TOOL_BASE_URL = import.meta.env.VITE_TOOL_BASE_URL;
 
   const [payments, setPayments] = useState([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
@@ -98,6 +99,20 @@ const Profile = () => {
       setDownloadingInvoice(null);
     }
   };
+
+  // =========================
+  // OPEN FEATURE TOOL
+  // =========================
+  const handleOpenFeature = (feature) => {
+    if (!feature?.code) {
+      showNotification('❌ Endpoint fitur tidak ditemukan', 'error');
+      return;
+    }
+
+    // Redirect ke tools (sub app)
+    window.location.href = `${TOOL_BASE_URL}${feature.code}/`;
+  };
+
 
   // =========================
   // GET FEATURE ICON
@@ -216,7 +231,7 @@ const Profile = () => {
           {packageInfo.active_features && packageInfo.active_features.length > 0 ? (
             <div className="features-access-grid">
               {packageInfo.active_features.map(feature => (
-                <div key={feature.id} className="feature-access-card">
+                <div key={feature.id}   className="feature-access-card clickable" onClick={() => handleOpenFeature(feature)}>
                   <div className="feature-access-icon">
                     {getFeatureIcon(feature.name)}
                   </div>
