@@ -8,10 +8,10 @@ import PackageCard from '../cards/PackageCard';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const DURATION_TABS = [
-  { label: '1 Bulan', days: 30 },
-  { label: '3 Bulan', days: 90, badge: '20% OFF' },
-  { label: '6 Bulan', days: 180, badge: '30% OFF' },
-  { label: '1 Tahun', days: 365, badge: '40% OFF' },
+  { label: '1 Bulan', days: 30, discountRate: 0 },
+  { label: '3 Bulan', days: 90, discountRate: 0.2, badge: '20% OFF' },
+  { label: '6 Bulan', days: 180, discountRate: 0.3, badge: '30% OFF' },
+  { label: '1 Tahun', days: 365, discountRate: 0.4, badge: '40% OFF' },
 ];
 
 const Packages = () => {
@@ -27,9 +27,7 @@ const Packages = () => {
       <div className="container-max">
         {/* ================= HEADER ================= */}
         <div className="text-center mb-14 animate-fade-in">
-          <h2 className="text-3xl font-bold mb-4">
-            Pilih Paket Layanan Anda
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">Pilih Paket Layanan Anda</h2>
           <p className="text-muted text-lg max-w-2xl mx-auto">
             Dapatkan akses ke berbagai dokumen legal dan layanan konsultasi
             sesuai kebutuhan Anda

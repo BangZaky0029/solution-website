@@ -9,6 +9,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { featureAccessService } from '../../services/featureAccessService';
 import LoadingSpinner from '../common/LoadingSpinner';
 import PremiumAccessModal from '../common/PremiumAccessModal';
+import { mapFeatureIcon } from '../../utils/mapFeatureIcon';
+
 
 const MAIN_SITE_URL = 'https://nuansasolution.id';
 
@@ -16,6 +18,7 @@ const Features = () => {
   const { data: features, loading, error } = useFetch('/feature');
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
 
   // State untuk manage feature access
   const [featureAccessStatus, setFeatureAccessStatus] = useState({});
@@ -100,23 +103,6 @@ const Features = () => {
   };
 
   // ========================================
-  // GET FEATURE ICON
-  // ========================================
-  const getFeatureIcon = (name) => {
-    const icons = {
-      'Generator Surat Kuasa': '📄',
-      'Kalkulator PPh': '🧮',
-      'Kalkulator Pajak Properti': '🏠',
-      'Surat Pernyataan': '📝',
-      'Surat Permohonan': '✉️',
-      'Surat Perintah Kerja': '🛠️',
-      'Surat Jalan': '🚚',
-      'Invoice': '🧾'
-    };
-    return icons[name] || '📋';
-  };
-
-  // ========================================
   // GET BADGE INFO
   // ========================================
   const getBadgeInfo = (feature, accessStatus) => {
@@ -173,7 +159,7 @@ const Features = () => {
                   className="feature-card-modern"
                   onClick={() => handleFeatureClick(feature)}
                 >
-                  <div className="feature-card-icon">{getFeatureIcon(feature.name)}</div>
+                  <div className="feature-card-icon">{mapFeatureIcon(feature.code || '')}</div>
 
                   <div className="feature-card-content">
                     <h3 className="feature-card-title">{feature.name}</h3>

@@ -2,7 +2,7 @@
 // FILE: src/components/common/ConfirmLogoutModal.jsx
 // =========================================
 
-import { motion, AnimatePresence } from 'framer-motion';
+import {AnimatePresence } from 'framer-motion';
 
 const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
   if (!open) return null;
