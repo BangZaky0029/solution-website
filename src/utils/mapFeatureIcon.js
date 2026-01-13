@@ -1,3 +1,5 @@
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\utils\mapFeatureIcon.js
+
 import { Icons } from './services-data-icons';
 
 export const mapFeatureIcon = (code = '') => {

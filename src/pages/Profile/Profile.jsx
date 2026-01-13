@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/pages/Profile/Profile.jsx - UPDATED
+// FILE: C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\pages\Profile\Profile.jsx
 // =========================================
 
 import { useState, useEffect } from 'react';
@@ -17,12 +17,13 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import Button from '../../components/common/Button';
 import api from '../../services/api';
 import '../../styles/Style_forWebsite/Profile.css';
+import { mapFeatureIcon } from '../../utils/mapFeatureIcon';
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { data: userTokens, loading: tokensLoading } = useFetch('/users/tokens');
-  const { packageInfo, accessStatus, loading: accessLoading } = useFeatureAccess();
+  const { packageInfo, loading: accessLoading } = useFeatureAccess();
   const TOOL_BASE_URL = import.meta.env.VITE_TOOL_BASE_URL;
 
   const [payments, setPayments] = useState([]);
@@ -111,24 +112,6 @@ const Profile = () => {
 
     // Redirect ke tools (sub app)
     window.location.href = `${TOOL_BASE_URL}${feature.code}/`;
-  };
-
-
-  // =========================
-  // GET FEATURE ICON
-  // =========================
-  const getFeatureIcon = (featureName) => {
-    const icons = {
-      'Generator Surat Kuasa': '📄',
-      'Surat Pernyataan': '📝',
-      'Surat Permohonan': '✉️',
-      'Kalkulator PPh': '🧮',
-      'Kalkulator Pajak Properti': '🏠',
-      'Surat Perintah Kerja': '🛠️',
-      'Surat Jalan': '🚚',
-      'Invoice': '🧾'
-    };
-    return icons[featureName] || '📋';
   };
 
   if (tokensLoading || loadingPayments) return <LoadingSpinner />;
@@ -233,7 +216,7 @@ const Profile = () => {
               {packageInfo.active_features.map(feature => (
                 <div key={feature.id}   className="feature-access-card clickable" onClick={() => handleOpenFeature(feature)}>
                   <div className="feature-access-icon">
-                    {getFeatureIcon(feature.name)}
+                    {mapFeatureIcon(feature.code || feature.name)}
                   </div>
                   <div className="feature-access-content">
                     <h4 className="feature-access-name">{feature.name}</h4>

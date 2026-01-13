@@ -1,4 +1,5 @@
-// src/utils/services-data-icons.jsx
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\utils\services-data-icons.jsx
+
 import { 
   FaFileAlt, FaCalculator, FaHome, FaTruck, FaDollarSign, FaFileInvoice, FaPen, FaMailBulk, FaBriefcase, FaReceipt 
 } from "react-icons/fa";
