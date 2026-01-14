@@ -29,8 +29,8 @@ export const SUBSCRIPTION_STATUS = {
 export const FAQ_DATA = [
   {
     id: 1,
-    question: 'Apa itu Gateway SOLUTION?',
-    answer: 'Gateway SOLUTION adalah platform pembayaran terpadu yang memudahkan pengguna untuk mengakses berbagai tools dan features dengan sistem berlangganan.',
+    question: 'Apa itu Generator Surat?',
+    answer: 'Generator Surat adalah platform yang memudahkan pengguna dalam membuat surat dengan cepat dan mudah. Dengan berbagai template yang tersedia, pengguna dapat membuat surat seperti konfirmasi pembayaran, surat Kuasa, surat pernyataan, dan banyak lagi.',
   },
   {
     id: 2,

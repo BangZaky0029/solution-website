@@ -67,3 +67,4 @@ desktop.ini
 # =========================================
 .git/
 .gitignore.lock
+.aider*
