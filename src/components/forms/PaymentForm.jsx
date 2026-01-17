@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { PAYMENT_METHODS } from '../../utils/constants';
 import Button from '../common/Button';
-import qrisImage from '../../assets/qrcode/nuansaLogo.png';
+import qrisImage from '../../assets/qrcode/qr.jpeg';
 import './PaymentForm.css';
 
 const PaymentForm = ({ 
