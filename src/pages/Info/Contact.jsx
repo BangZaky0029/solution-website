@@ -35,7 +35,7 @@ export const Contact = () => {
                 <div className="contact-icon">📱</div>
                 <div>
                   <h4>WhatsApp</h4>
-                  <p>+62 812-3456-7890</p>
+                  <p>+62 882-1372-8307</p>
                 </div>
               </div>
 
@@ -44,7 +44,7 @@ export const Contact = () => {
                 <div>
                   <h4>Alamat</h4>
                   <p>PT Nuansa Berkah Sejahtera</p>
-                  <p>Jakarta, Indonesia</p>
+                  <p>Cibungbulang Town Hill Cluster Halimun <br /> Blok H7, Kab. Bogor 16630</p>
                 </div>
               </div>
 
