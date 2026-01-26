@@ -1,15 +1,15 @@
-import { Outlet } from 'react-router-dom';
-import Header from '../components/common/Header';
-import Footer from '../components/common/Footer';
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\layouts\AuthLayout.jsx
+// Fixed - Isolated layout untuk auth pages
 
-const MainLayout = () => {
+import { Outlet } from 'react-router-dom';
+import '../styles/Style_forWebsite/Auth.css';
+
+const AuthLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow">
-        <Outlet />
-      </main>
+    <div className="auth-layout-wrapper">
+      <Outlet />
     </div>
   );
 };
 
-export default MainLayout;
+export default AuthLayout;

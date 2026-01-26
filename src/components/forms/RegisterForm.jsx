@@ -1,7 +1,5 @@
-// =========================================
-// FILE: src/components/forms/RegisterForm.jsx - UPGRADED
-// Enhanced with Phone Validation & Better UX
-// =========================================
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\components\forms\RegisterForm.jsx
+// Enhanced with OTP display on frontend
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -11,7 +9,7 @@ import { validateForm, validatePhone, getPasswordStrength } from '../../utils/va
 import { getErrorMessage } from '../../utils/helpers';
 import Button from '../common/Button';
 import PhoneInput from '../common/PhoneInput';
-import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle, XCircle } from 'lucide-react';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -87,10 +85,31 @@ const RegisterForm = () => {
       );
       
       // Success
-      showToast('🎉 Registrasi berhasil! Trial 3 hari diaktifkan!', 'success', 4000);
+      const { trialPackage } = response;
+
+      if (trialPackage) {
+        showToast(
+          `🎉 Trial berhasil diaktifkan: ${trialPackage.packageName} (${trialPackage.durationDays} hari)`,
+          'success',
+          5000
+        );
+      } else {
+        showToast('🎉 Registrasi berhasil! Silakan verifikasi OTP!', 'success', 4000);
+      }
+
       
+      // 🔥 PASS OTP KE HALAMAN VERIFY-OTP
       setTimeout(() => {
-        navigate('/verify-otp', { state: { email: formData.email } });
+        navigate('/verify-otp', { 
+          state: { 
+            email: formData.email,
+            otp: response.otp,
+            otpExpiry: response.otpExpiry,
+            otpDuration: response.otpDuration || 30,
+            userName: formData.name,
+            trialPackage: response.trialPackage // 🔥 Tambahkan ini
+          } 
+        });
       }, 500);
     } catch (error) {
       const errorMessage = getErrorMessage(error);

@@ -1,7 +1,5 @@
-// =========================================
-// FILE: src/App.jsx - UPGRADED
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\App.jsx
 // Enhanced with Forgot Password Routes
-// =========================================
 
 import { Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './hooks/useToast';
@@ -10,11 +8,14 @@ import { ToastProvider } from './hooks/useToast';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 
+// Protected Route
+import ProtectedRoute from './components/ProtectedRoute';
+
 // Pages
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
-import VerifyOTP from './pages/Auth/VerifyOTP';
+import VerifyOTPPage from './pages/VerifyOTPPage';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Profile from './pages/Profile/Profile';
 import PaymentPage from './pages/Payment/PaymentPage';
@@ -44,16 +45,32 @@ function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/verify-otp" element={<VerifyOTP />} />
+          {/* 🔥 GANTI DENGAN COMPONENT BARU */}
+          <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
         {/* ================= MAIN (WITH HEADER / FOOTER) ================= */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+          
+          {/* 🔒 Protected Routes */}
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/payment" element={
+            <ProtectedRoute>
+              <PaymentPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/payment-confirmation" element={
+            <ProtectedRoute>
+              <PaymentConfirmation />
+            </ProtectedRoute>
+          } />
+          
           <Route path="/features" element={<FeaturesPage />} />
 
           {/* Info Pages */}

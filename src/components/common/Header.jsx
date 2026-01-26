@@ -1,27 +1,60 @@
-// =========================================
-// FILE: src/components/common/Header.jsx
-// =========================================
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\components\common\Header.jsx
+// Fixed - Better logout flow
 
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import Sidebar from './Sidebar';
 import logo from '../../assets/images/NS_blank_02.png';
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const { isAuthenticated, user, logout } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
   const isHomePage = location.pathname === '/';
 
   const confirmLogout = () => {
-    logout();
-    setShowLogoutConfirm(false);
-    navigate('/login');
+    console.log('========================================');
+    console.log('🚪 LOGOUT - Process started');
+    console.log('========================================');
+
+    setIsLoggingOut(true);
+    
+    try {
+      // Call logout
+      logout();
+      
+      console.log('✅ Logout successful');
+      
+      // Close modal
+      setShowLogoutConfirm(false);
+      
+      // Show toast
+      showToast('✅ Logout berhasil!', 'success');
+      
+      // Navigate to login after a short delay
+      setTimeout(() => {
+        console.log('➡️ Navigating to /login');
+        navigate('/login', { replace: true });
+        setIsLoggingOut(false);
+      }, 500);
+      
+    } catch (error) {
+      console.error('❌ Logout error:', error);
+      showToast('Terjadi kesalahan saat logout', 'error');
+      setIsLoggingOut(false);
+    }
+
+    console.log('========================================');
+    console.log('🏁 LOGOUT - Process completed');
+    console.log('========================================');
   };
 
   return (
@@ -48,7 +81,7 @@ const Header = () => {
 
           {/* AUTH */}
           <div className="header-auth-desktop">
-            {isAuthenticated ? (
+            {isAuthenticated() ? (
               <div className="header-user-menu">
                 <Link to="/profile" className="header-user-link">
                   <div className="header-user-avatar">
@@ -62,8 +95,9 @@ const Header = () => {
                 <button
                   className="btn btn-outline btn-sm"
                   onClick={() => setShowLogoutConfirm(true)}
+                  disabled={isLoggingOut}
                 >
-                  Logout
+                  {isLoggingOut ? 'Loading...' : 'Logout'}
                 </button>
               </div>
             ) : (
@@ -96,8 +130,8 @@ const Header = () => {
 
       {/* LOGOUT CONFIRM MODAL */}
       {showLogoutConfirm && (
-        <div className="modal-backdrop">
-          <div className="modal">
+        <div className="modal-backdrop" onClick={() => !isLoggingOut && setShowLogoutConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Konfirmasi Logout</h3>
             <p>Apakah Anda yakin ingin keluar?</p>
 
@@ -105,14 +139,16 @@ const Header = () => {
               <button
                 className="btn btn-outline"
                 onClick={() => setShowLogoutConfirm(false)}
+                disabled={isLoggingOut}
               >
                 Batal
               </button>
               <button
                 className="btn btn-danger"
                 onClick={confirmLogout}
+                disabled={isLoggingOut}
               >
-                Logout
+                {isLoggingOut ? 'Memproses...' : 'Logout'}
               </button>
             </div>
           </div>

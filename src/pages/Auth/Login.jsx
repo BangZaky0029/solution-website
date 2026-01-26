@@ -1,29 +1,56 @@
-// =========================================
-// FILE: src/pages/Auth/Login.jsx
-// =========================================
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\pages\Auth\Login.jsx
+// Fixed - No infinite redirect loop
 
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import LoginForm from '../../components/forms/LoginForm';
 import '../../styles/Style_forWebsite/Auth.css';
 
 const Login = () => {
-  const { isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const hasRedirected = useRef(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/profile');
+    console.log('🔍 Login Page - Auth Check:');
+    console.log('   Loading:', loading);
+    console.log('   User:', user);
+    console.log('   Has Redirected:', hasRedirected.current);
+
+    // Only redirect if:
+    // 1. Not loading
+    // 2. User exists
+    // 3. Haven't redirected yet
+    if (!loading && user && !hasRedirected.current) {
+      console.log('✅ User already logged in, redirecting to profile...');
+      hasRedirected.current = true;
+      navigate('/profile', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [user, loading, navigate]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render form if user is logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2>Masuk ke Akun Anda</h2>
-          <p className="text-muted">Silakan login untuk melanjutkan</p>
+          <h2>Login</h2>
+          <p className="text-muted">Masuk ke akun Anda</p>
         </div>
         <LoginForm />
       </div>

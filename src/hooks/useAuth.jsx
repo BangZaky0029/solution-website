@@ -1,76 +1,156 @@
-// =========================================
-// FILE: src/hooks/useAuth.jsx - FIXED
-// =========================================
+// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\hooks\useAuth.js
+// Custom hook untuk authentication dengan proper token handling
 
-import { useState, useEffect, useContext, createContext } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { authController } from '../controllers/authController';
-import { userController } from '../controllers/userController';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const checkAuth = async () => {
-    try {
-      if (!authController.isAuthenticated()) {
-        setLoading(false);
-        return;
-      }
-
-      // ✅ FIXED: userController.getProfile sudah handle response structure
-      const userData = await userController.getProfile();
-      setUser(userData);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      authController.logout();
-      setUser(null);
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Check authentication on mount
   useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        try {
+          const response = await authController.me();
+          setUser(response.user);
+          console.log('✅ User authenticated:', response.user);
+        } catch (error) {
+          console.error('❌ Auth check failed:', error);
+          localStorage.removeItem('token');
+          setUser(null);
+        }
+      }
+      
+      setLoading(false);
+    };
+
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
-    setLoading(true);
+  const register = async (name, email, phone, password) => {
     try {
-      const res = await authController.login(email, password);
-      // ✅ FIXED: getProfile sudah handle response structure
-      const userData = await userController.getProfile();
-      setUser(userData);
-      setIsAuthenticated(true);
-      return res;
-    } finally {
-      setLoading(false);
+      console.log('📝 Registering user:', { name, email, phone });
+      const response = await authController.register(name, email, phone, password);
+      console.log('✅ Register response:', response);
+      return response; // Contains otp, otpExpiry, otpDuration
+    } catch (error) {
+      console.error('❌ Register failed:', error);
+      throw error;
     }
   };
 
-  const register = async (name, email, phone, password) => {
-    return authController.register(name, email, phone, password);
+  const verifyOTP = async (email, otp) => {
+    try {
+      console.log('🔐 Verifying OTP for:', email);
+      const response = await authController.verifyOTP(email, otp);
+      console.log('✅ OTP verified:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ OTP verification failed:', error);
+      throw error;
+    }
+  };
+
+  const resendOTP = async (email) => {
+    try {
+      console.log('🔄 Resending OTP for:', email);
+      const response = await authController.resendOTP(email);
+      console.log('✅ OTP resent:', response);
+      return response; // Contains new otp, otpExpiry, otpDuration
+    } catch (error) {
+      console.error('❌ Resend OTP failed:', error);
+      throw error;
+    }
+  };
+
+  const login = async (email, password) => {
+    try {
+      console.log('🔐 Logging in:', email);
+      const response = await authController.login(email, password);
+      
+      console.log('✅ Login response:', response);
+      
+      // 🔥 CRITICAL: Set user state
+      if (response.user) {
+        setUser(response.user);
+        console.log('✅ User state updated:', response.user);
+      }
+      
+      // Token sudah disimpan di authController.login()
+      console.log('✅ Token saved to localStorage');
+      
+      return response;
+    } catch (error) {
+      console.error('❌ Login failed:', error);
+      throw error;
+    }
   };
 
   const logout = () => {
+    console.log('🚪 Logging out...');
+    
+    // Clear token
     authController.logout();
+    
+    // Clear user state
     setUser(null);
-    setIsAuthenticated(false);
+    
+    // Clear any other stored data
+    localStorage.removeItem('rememberMe');
+    
+    console.log('✅ User logged out');
+    console.log('✅ Token removed from localStorage');
+    console.log('✅ User state cleared');
+  };
+
+  const isAuthenticated = () => {
+    const hasToken = authController.isAuthenticated();
+    console.log('🔍 Is authenticated:', hasToken);
+    return hasToken;
+  };
+
+  const getCurrentUser = async () => {
+    try {
+      const response = await authController.me();
+      setUser(response.user);
+      return response.user;
+    } catch (error) {
+      console.error('❌ Get current user failed:', error);
+      throw error;
+    }
+  };
+
+  const value = {
+    user,
+    loading,
+    register,
+    verifyOTP,
+    resendOTP,
+    login,
+    logout,
+    isAuthenticated,
+    getCurrentUser
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  
+  return context;
 };
