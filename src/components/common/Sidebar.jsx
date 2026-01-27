@@ -1,6 +1,5 @@
 // =========================================
-// FILE: C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\components\common\Sidebar.jsx
-// Modern Mobile Sidebar Component - FINAL
+// FILE: Sidebar.jsx - FIXED VERSION
 // =========================================
 
 import { useState } from 'react';
@@ -16,6 +15,7 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
   const navigate = useNavigate();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleNavClick = (path) => {
     navigate(path);
@@ -23,18 +23,41 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
   };
 
   const handleConfirmLogout = () => {
-    logout();
-    setShowLogoutModal(false);
-    onClose();
+    console.log('========================================');
+    console.log('🚪 LOGOUT - Sidebar Process Started');
+    console.log('========================================');
 
-    showToast({
-      type: 'success',
-      message: 'Logout berhasil 👋',
-    });
+    setIsLoggingOut(true);
 
-    setTimeout(() => {
-      navigate('/login');
-    }, 300);
+    try {
+      // Call logout
+      logout();
+
+      console.log('✅ Logout successful from sidebar');
+
+      // Close modal and sidebar
+      setShowLogoutModal(false);
+      onClose();
+
+      // Show toast - FORMAT YANG BENAR
+      showToast('✅ Logout berhasil!', 'success');
+
+      // Navigate to login
+      setTimeout(() => {
+        console.log('➡️ Navigating to /login from sidebar');
+        navigate('/login', { replace: true });
+        setIsLoggingOut(false);
+      }, 500);
+
+    } catch (error) {
+      console.error('❌ Logout error from sidebar:', error);
+      showToast('Terjadi kesalahan saat logout', 'error');
+      setIsLoggingOut(false);
+    }
+
+    console.log('========================================');
+    console.log('🏁 LOGOUT - Sidebar Process Completed');
+    console.log('========================================');
   };
 
   return (
@@ -152,15 +175,16 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
               <button
                 className="sidebar-nav-item sidebar-logout"
                 onClick={() => setShowLogoutModal(true)}
+                disabled={isLoggingOut}
               >
-                🚪 Logout
+                {isLoggingOut ? '⏳ Logging out...' : '🚪 Logout'}
               </button>
             </div>
           )}
         </div>
 
         <div className="sidebar-footer">
-          <p>2022 nuansasolution.id. | All rights reserved.</p>
+          <p>© 2022 nuansasolution.id. | All rights reserved.</p>
           <p>v1.0.0</p>
         </div>
       </div>
@@ -168,8 +192,9 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
       {/* LOGOUT MODAL */}
       <ConfirmLogoutModal
         open={showLogoutModal}
-        onCancel={() => setShowLogoutModal(false)}
+        onCancel={() => !isLoggingOut && setShowLogoutModal(false)}
         onConfirm={handleConfirmLogout}
+        isLoading={isLoggingOut}
       />
     </>
   );

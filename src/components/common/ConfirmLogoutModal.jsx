@@ -1,11 +1,10 @@
 // =========================================
-// FILE: ConfirmLogoutModal.jsx
-// FIXED VERSION
+// FILE: ConfirmLogoutModal.jsx - UPDATED
 // =========================================
 
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
+const ConfirmLogoutModal = ({ open, onCancel, onConfirm, isLoading = false }) => {
   if (!open) return null;
 
   return (
@@ -15,7 +14,7 @@ const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onCancel}
+        onClick={!isLoading ? onCancel : undefined}
       >
         <motion.div
           className="bg-white rounded-xl w-[90%] max-w-md p-6 shadow-xl"
@@ -37,6 +36,7 @@ const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
             <button
               onClick={onCancel}
               className="btn btn-outline"
+              disabled={isLoading}
             >
               Batal
             </button>
@@ -44,8 +44,9 @@ const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
             <button
               onClick={onConfirm}
               className="btn btn-danger"
+              disabled={isLoading}
             >
-              Logout
+              {isLoading ? 'Memproses...' : 'Logout'}
             </button>
           </div>
         </motion.div>
