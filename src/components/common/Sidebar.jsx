@@ -1,5 +1,5 @@
 // =========================================
-// FILE: src/components/common/Sidebar.jsx
+// FILE: C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\components\common\Sidebar.jsx
 // Modern Mobile Sidebar Component - FINAL
 // =========================================
 

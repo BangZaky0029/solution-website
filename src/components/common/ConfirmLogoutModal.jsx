@@ -1,8 +1,9 @@
 // =========================================
-// FILE: src/components/common/ConfirmLogoutModal.jsx
+// FILE: ConfirmLogoutModal.jsx
+// FIXED VERSION
 // =========================================
 
-import {AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
   if (!open) return null;
@@ -14,6 +15,7 @@ const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        onClick={onCancel}
       >
         <motion.div
           className="bg-white rounded-xl w-[90%] max-w-md p-6 shadow-xl"
@@ -21,6 +23,7 @@ const ConfirmLogoutModal = ({ open, onCancel, onConfirm }) => {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.2 }}
+          onClick={(e) => e.stopPropagation()}
         >
           <h3 className="text-lg font-semibold mb-2">
             Konfirmasi Logout
