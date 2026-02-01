@@ -46,7 +46,7 @@ Blue Soft Theme - Cleaned & Organized
   --text-light: #9CA3AF;
   
   /* Layout */
-  --header-height: 72px; /* Disesuaikan agar lebih compact & modern */
+  --header-height: 80px; /* Ditingkatkan dari 72px */
   --section-padding: 120px;
   --container-max: 1280px;
   
@@ -199,7 +199,7 @@ button {
 }
 
 .header-logo img {
-  height: 130px; /* Ukuran ideal untuk navbar 72px */
+  height: 160px; /* Ditingkatkan dari 130px */
   width: auto;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   object-fit: contain;
@@ -211,7 +211,7 @@ button {
 
 .header-nav-desktop {
   display: flex;
-  gap: 36px; /* Jarak menu yang lebih elegan */
+  gap: 36px; 
   align-items: center;
 }
 
@@ -391,13 +391,13 @@ button {
   }
   
   .header-logo img {
-    height: 130px;
+    height: 140px; /* Sedikit dikecilkan untuk mobile */
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    --header-height: 64px;
+    --header-height: 72px;
   }
   
   .container-max {

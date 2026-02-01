@@ -1,6 +1,6 @@
 
 // =========================================
-// FILE: src/pages/Profile/Profile.jsx - CLEANED & ENHANCED INVOICE
+// FILE: src/pages/Profile/Profile.jsx - DIRECT PDF DOWNLOAD
 // =========================================
 
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { useFeatureAccess } from '../../hooks/useFeatureAccess';
+import html2pdf from 'html2pdf.js';
 import {
   getDaysRemaining,
   formatDate,
@@ -65,74 +66,66 @@ const Profile = () => {
   };
 
   // ========================================
-  // PROFESSIONAL INVOICE GENERATOR (PDF PRINT)
+  // DIRECT PDF DOWNLOADER (AUTO DOWNLOAD)
   // ========================================
   const handleDownloadInvoice = (payment) => {
     setDownloadingId(payment.id);
     
-    const printWindow = window.open('', '_blank');
-    
     // Path logo menggunakan URL absolut dari origin saat ini
-    const logoUrl = `${window.location.origin}/NS_blank_02.png`;
+    const logoUrl = `${window.location.origin}/nuansaLogo.png`;
     
     const invoiceHTML = `
-      <html>
-        <head>
-          <title>Invoice #${payment.id} - Nuansa Solution</title>
+      <div style="font-family: 'Inter', sans-serif; color: #1e293b; padding: 40px; background: #fff; position: relative;">
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-            body { font-family: 'Inter', sans-serif; color: #1e293b; margin: 0; padding: 0; background: #fff; }
-            .invoice-wrapper { padding: 50px; max-width: 800px; margin: 0 auto; position: relative; }
-            
-            /* KOP SURAT */
-            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 30px; margin-bottom: 40px; }
-            .brand-box { display: flex; flex-direction: column; gap: 10px; }
-            .brand-box img { height: 70px; width: auto; object-fit: contain; }
+            .invoice-wrapper { position: relative; z-index: 1; }
+            .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
+            .brand-box img { height: 130px; width: auto; }
             .company-details { text-align: right; }
-            .company-details h2 { margin: 0; color: #2E8FE8; font-size: 22px; font-weight: 700; }
-            .company-details p { margin: 2px 0; font-size: 12px; color: #64748b; line-height: 1.5; }
+            .company-details h2 { margin: 0; color: #2E8FE8; font-size: 20px; font-weight: 700; }
+            .company-details p { margin: 2px 0; font-size: 11px; color: #64748b; }
             
-            /* INVOICE TITLE & INFO */
-            .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 40px; }
-            .title-section h1 { margin: 0; font-size: 32px; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: -1px; }
-            .title-section p { margin: 5px 0 0; color: #64748b; font-size: 14px; }
+            .invoice-meta { display: flex; justify-content: space-between; margin-bottom: 30px; }
+            .title-section h1 { margin: 0; font-size: 28px; font-weight: 700; color: #0f172a; text-transform: uppercase; }
+            .title-section p { margin: 5px 0 0; color: #64748b; font-size: 12px; }
             
-            .billing-info { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-            .info-card h3 { font-size: 12px; text-transform: uppercase; color: #94a3b8; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; letter-spacing: 1px; }
-            .info-card p { margin: 4px 0; font-size: 14px; line-height: 1.6; }
-            .info-card strong { color: #0f172a; }
+            .billing-info { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+            .info-card h3 { font-size: 11px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+            .info-card p { margin: 3px 0; font-size: 13px; }
 
-            /* TABLE STYLE */
             table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-            th { background: #f8fafc; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; padding: 12px 15px; text-align: left; border-top: 1px solid #e2e8f0; border-bottom: 2px solid #e2e8f0; }
-            td { padding: 18px 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+            th { background: #f8fafc; color: #475569; font-size: 11px; text-transform: uppercase; padding: 10px; text-align: left; border-top: 1px solid #e2e8f0; border-bottom: 2px solid #e2e8f0; }
+            td { padding: 15px 10px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
             .text-right { text-align: right; }
             
-            /* TOTALS */
             .summary-section { display: flex; justify-content: flex-end; }
-            .total-table { width: 300px; }
-            .total-table td { padding: 8px 15px; border: none; font-size: 14px; }
-            .grand-total { border-top: 2px solid #2E8FE8 !important; }
-            .grand-total td { padding-top: 15px; font-size: 18px; font-weight: 700; color: #2E8FE8; }
+            .total-table { width: 250px; }
+            .total-table td { padding: 5px 10px; border: none; font-size: 13px; }
+            .grand-total td { border-top: 2px solid #2E8FE8 !important; padding-top: 10px; font-size: 16px; font-weight: 700; color: #2E8FE8; }
 
-            /* STAMP */
-            .stamp { position: absolute; top: 180px; right: 60px; border: 4px double #10b981; color: #10b981; font-weight: 800; font-size: 20px; padding: 8px 20px; border-radius: 8px; transform: rotate(-15deg); opacity: 0.3; text-transform: uppercase; }
-
-            /* FOOTER */
-            .footer { margin-top: 80px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; }
-            .footer p { margin: 4px 0; font-size: 12px; color: #94a3b8; }
-            .footer strong { color: #64748b; }
-
-            @media print {
-              body { padding: 0; }
-              .invoice-wrapper { padding: 40px; }
+            .stamp { 
+              position: absolute; 
+              top: 55%; 
+              left: 50%; 
+              transform: translate(-50%, -50%) rotate(-15deg); 
+              border: 10px double #10b981; 
+              color: #10b981; 
+              font-weight: 900; 
+              font-size: 64px; 
+              padding: 20px 50px; 
+              border-radius: 20px; 
+              opacity: 0.1; 
+              text-transform: uppercase; 
+              white-space: nowrap;
+              pointer-events: none;
+              z-index: 0;
             }
+            .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; }
+            .footer p { margin: 3px 0; font-size: 11px; color: #94a3b8; }
           </style>
-        </head>
-        <body>
+          
+          <div class="stamp">Lunas / Verified</div>
+          
           <div class="invoice-wrapper">
-            <div class="stamp">Lunas / Verified</div>
-            
             <div class="header">
               <div class="brand-box">
                 <img src="${logoUrl}" alt="Nuansa Logo">
@@ -142,7 +135,6 @@ const Profile = () => {
                 <p>PT Nuansa Berkah Sejahtera</p>
                 <p>Cibungbulang, Kab. Bogor, Jawa Barat</p>
                 <p>www.nuansasolution.id</p>
-                <p>support@nuansasolution.id</p>
               </div>
             </div>
 
@@ -152,8 +144,8 @@ const Profile = () => {
                 <p>ID Transaksi: #${payment.id}</p>
               </div>
               <div style="text-align: right">
-                <p style="margin:0; font-size: 14px; color: #64748b">Tanggal Terbit:</p>
-                <p style="margin:0; font-size: 16px; font-weight: 600">${formatDate(payment.created_at)}</p>
+                <p style="margin:0; font-size: 12px; color: #64748b">Tanggal Terbit:</p>
+                <p style="margin:0; font-size: 14px; font-weight: 600">${formatDate(payment.created_at)}</p>
               </div>
             </div>
 
@@ -182,8 +174,8 @@ const Profile = () => {
               <tbody>
                 <tr>
                   <td>
-                    <div style="font-weight: 600; margin-bottom: 4px;">Langganan Paket ${payment.package_name}</div>
-                    <div style="font-size: 12px; color: #64748b">Akses penuh ke seluruh ekosistem fitur Gateway Nuansa Solution.</div>
+                    <div style="font-weight: 600;">Langganan Paket ${payment.package_name}</div>
+                    <div style="font-size: 11px; color: #64748b">Akses penuh ekosistem Gateway Nuansa Solution.</div>
                   </td>
                   <td class="text-right">${payment.duration_days || '-'} Hari</td>
                   <td class="text-right">${formatCurrency(payment.amount)}</td>
@@ -198,7 +190,7 @@ const Profile = () => {
                   <td class="text-right">${formatCurrency(payment.amount)}</td>
                 </tr>
                 <tr>
-                  <td>Pajak (PPN 0%)</td>
+                  <td>Pajak (0%)</td>
                   <td class="text-right">Rp 0</td>
                 </tr>
                 <tr class="grand-total">
@@ -209,26 +201,40 @@ const Profile = () => {
             </div>
 
             <div class="footer">
-              <p>Terima kasih telah mempercayakan kebutuhan digital Anda kepada <strong>Nuansa Solution</strong>.</p>
-              <p>Dokumen ini merupakan bukti pembayaran sah yang diterbitkan secara elektronik.</p>
+              <p>Terima kasih telah menggunakan layanan <strong>Nuansa Solution</strong>.</p>
+              <p>Dokumen ini adalah bukti pembayaran sah elektronik.</p>
             </div>
           </div>
-
-          <script>
-            window.onload = function() { 
-              setTimeout(() => {
-                window.print(); 
-                window.onafterprint = () => window.close();
-              }, 500);
-            }
-          </script>
-        </body>
-      </html>
+      </div>
     `;
-    
-    printWindow.document.write(invoiceHTML);
-    printWindow.document.close();
-    setDownloadingId(null);
+
+    // Konfigurasi html2pdf
+    const options = {
+      margin: 0,
+      filename: `Invoice-${payment.id}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Buat elemen dummy di memori
+    const container = document.createElement('div');
+    container.innerHTML = invoiceHTML;
+
+    // Eksekusi download
+    html2pdf()
+      .set(options)
+      .from(container)
+      .save()
+      .then(() => {
+        setDownloadingId(null);
+        showToast('✅ Invoice berhasil diunduh');
+      })
+      .catch((err) => {
+        console.error('PDF Generation Error:', err);
+        setDownloadingId(null);
+        showToast('❌ Gagal mengunduh invoice', 'error');
+      });
   };
 
   const handleOpenFeature = (feature) => {
@@ -385,7 +391,7 @@ const Profile = () => {
                             onClick={() => handleDownloadInvoice(payment)}
                             disabled={downloadingId === payment.id}
                           >
-                            <Download size={14} /> Invoice
+                            <Download size={14} /> {downloadingId === payment.id ? 'Loading...' : 'Invoice'}
                           </button>
                         ) : (
                           <span className="status-label pending">Proses</span>
