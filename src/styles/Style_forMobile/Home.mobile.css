@@ -1,37 +1,203 @@
+
 /* =========================================
 FILE: src/styles/Style_forMobile/Home.mobile.css
+FIXED: Grid Filter & Section Alignment
 ========================================= */
 
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  .hero-content {
+@media (max-width: 1024px) {
+  .hero-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    text-align: center;
+    gap: 48px;
   }
 
-  .hero-text h1 {
-    font-size: 2rem;
-  }
-
-  .hero-buttons {
+  .hero-content-modern {
+    display: flex;
     flex-direction: column;
+    align-items: center;
   }
 
-  .features-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 60px 20px;
+  .hero-actions-refined {
+    justify-content: center;
   }
 
-  .packages-grid {
+  .hero-trust-badges {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* GLOBAL TITLES */
+  h1 { font-size: 2.2rem !important; line-height: 1.2; }
+  h2 { font-size: 1.8rem !important; line-height: 1.3; }
+
+  /* HERO */
+  .hero-section-modern {
+    padding: 120px 0 60px;
+  }
+
+  .hero-content-modern p {
+    font-size: 1.05rem;
+    margin-bottom: 32px;
+  }
+
+  .hero-actions-refined {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .btn-hero-primary, 
+  .btn-hero-outline {
+    width: 100%;
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+
+  /* SECTION HEADERS (FIXED LAYOUT) */
+  .section-header-refined {
+    margin-bottom: 40px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .section-badge {
+    padding: 6px 16px;
+    font-size: 0.7rem;
+    margin-bottom: 16px;
+  }
+
+  .section-header-refined h2 {
+    font-size: 1.8rem !important;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+
+  .section-header-refined p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--gray-500);
+  }
+
+  /* PRICING (FIXED GRID FILTER - NO SCROLL) */
+  .pricing-section-refined {
+    padding: 80px 16px;
+  }
+
+  .pricing-tabs-container {
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .pricing-tabs-refined {
+    display: grid !important; /* Ubah ke grid */
+    grid-template-columns: 1fr 1fr; /* 2 kolom */
+    width: 100%;
+    background: var(--gray-100);
+    padding: 10px;
+    border-radius: 20px;
+    gap: 8px;
+    overflow-x: visible !important; /* Hapus scroll */
+  }
+
+  .tab-btn-refined {
+    padding: 12px 10px;
+    font-size: 0.8rem;
+    border-radius: 12px;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .tab-btn-refined span {
+    white-space: nowrap;
+  }
+
+  .tab-discount-tag {
+    font-size: 0.6rem;
+    padding: 1px 6px;
+  }
+
+  .packages-grid-refined {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 24px;
+  }
+
+  .pkg-card-refined {
+    padding: 40px 24px;
+    border-radius: 24px;
+  }
+
+  .price-val {
+    font-size: 2.2rem;
+  }
+
+  /* FAQ MOBILE REFINEMENT */
+  .faq-section-refined {
+    padding: 80px 16px;
+  }
+
+  .faq-grid-refined {
+    gap: 12px;
+  }
+
+  .faq-trigger {
+    padding: 20px 18px;
+  }
+
+  .faq-question {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    padding-right: 15px;
+  }
+
+  .faq-answer {
+    padding: 0 18px 24px;
+    font-size: 0.9rem;
+  }
+
+  /* CTA MOBILE REFINEMENT */
+  .cta-section-refined {
+    padding: 60px 16px;
+  }
+
+  .cta-glass-card {
+    padding: 50px 24px;
+    border-radius: 30px;
+  }
+
+  .cta-content .cta-title {
+    font-size: 1.8rem !important;
+    margin-bottom: 16px;
+  }
+
+  .cta-content .cta-description {
+    font-size: 1rem;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .cta-btn-main, 
+  .cta-btn-alt {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-main-logo {
+    max-width: 260px;
+  }
+
+  .floating-card {
+    padding: 8px 12px;
+    font-size: 0.75rem;
   }
 }

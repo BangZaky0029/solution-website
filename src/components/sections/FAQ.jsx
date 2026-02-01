@@ -1,42 +1,52 @@
-// =========================================
-// FILE: src/components/sections/FAQ.jsx
-// =========================================
 
 import { useState } from 'react';
 import { FAQ_DATA } from '../../utils/constants';
+import { ChevronDown } from 'lucide-react';
 
 const FAQ = () => {
   const [openId, setOpenId] = useState(null);
 
+  const toggleFAQ = (id) => {
+    setOpenId(openId === id ? null : id);
+  };
+
   return (
-    <section id="faq" className="faq-section">
-      <div className="text-center mb-16 animate-fade-in">
-        <h2>Pertanyaan Yang Sering Diajukan</h2>
-        <p className="text-muted text-lg mt-4 max-w-2xl mx-auto">
-          Temukan jawaban untuk pertanyaan umum tentang Gateway APTO
-        </p>
-      </div>
+    <section id="faq" className="faq-section-refined">
+      <div className="container-max">
+        <div className="section-header-refined">
+          <span className="section-badge">Bantuan & Dukungan</span>
+          <h2>Pertanyaan Yang Sering Diajukan</h2>
+          <p>Temukan jawaban cepat untuk pertanyaan umum seputar layanan Gateway SOLUTION.</p>
+        </div>
 
-      <div className="max-w-3xl mx-auto">
-        {FAQ_DATA.map((item) => (
-          <div key={item.id} className="faq-item animate-slide-up">
-            <div
-              className="faq-header"
-              onClick={() => setOpenId(openId === item.id ? null : item.id)}
-            >
-              <h4 className="font-semibold text-dark">{item.question}</h4>
-              <span className={`transition ${openId === item.id ? 'rotate-180' : ''}`}>
-                ▼
-              </span>
-            </div>
-
-            {openId === item.id && (
-              <div className="faq-content animate-slide-up">
-                <p className="text-muted">{item.answer}</p>
+        <div className="faq-grid-refined">
+          {FAQ_DATA.map((item) => {
+            const isOpen = openId === item.id;
+            return (
+              <div 
+                key={item.id} 
+                className={`faq-card-refined ${isOpen ? 'is-open' : ''}`}
+              >
+                <button 
+                  className="faq-trigger" 
+                  onClick={() => toggleFAQ(item.id)}
+                  aria-expanded={isOpen}
+                >
+                  <span className="faq-question">{item.question}</span>
+                  <div className="faq-icon-wrapper">
+                    <ChevronDown size={20} className={`faq-chevron ${isOpen ? 'rotate' : ''}`} />
+                  </div>
+                </button>
+                
+                <div className={`faq-content-wrapper ${isOpen ? 'show' : ''}`}>
+                  <div className="faq-answer">
+                    <p>{item.answer}</p>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
       </div>
     </section>
   );

@@ -1,3 +1,4 @@
+
 // C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\main.jsx
 
 import React from 'react';
@@ -18,7 +19,8 @@ import './styles/Style_forWebsite/Info.css';
 
 // ===== COMPONENT STYLES =====
 import './styles/components/Features.enhanced.css';
-import './styles/VerifyOTP.css'; // 🔥 TAMBAHKAN INI!
+import './styles/components/CTA.css'; // 🔥 TAMBAHKAN INI!
+import './styles/VerifyOTP.css'; 
 
 // ===== MOBILE STYLES =====
 import './styles/Style_forMobile/Home.mobile.css';

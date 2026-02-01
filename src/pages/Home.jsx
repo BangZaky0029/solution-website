@@ -1,3 +1,4 @@
+
 // =========================================
 // FILE: src/pages/Home.jsx
 // =========================================
@@ -5,7 +6,7 @@
 import Hero from '../components/sections/Hero';
 import Features from '../components/sections/Features';
 import Packages from '../components/sections/Packages';
-import FAQ from './Info/FAQ';
+import FAQ from '../components/sections/FAQ'; // Diubah dari ./Info/FAQ ke ../components/sections/FAQ
 import CTA from '../components/sections/CTA';
 
 const Home = () => {
