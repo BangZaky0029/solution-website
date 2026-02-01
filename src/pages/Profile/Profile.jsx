@@ -1,6 +1,6 @@
 
 // =========================================
-// FILE: src/pages/Profile/Profile.jsx - DIRECT PDF DOWNLOAD
+// FILE: src/pages/Profile/Profile.jsx - ENHANCED WITH CHAT ADMIN
 // =========================================
 
 import { useState, useEffect } from 'react';
@@ -24,7 +24,7 @@ import {
   Mail, Phone, Package, CreditCard, 
   HelpCircle, ArrowRight, Download, Calendar,
   Clock, ShieldCheck, ExternalLink,
-  AlertCircle
+  AlertCircle, MessageCircle
 } from 'lucide-react';
 
 const Profile = () => {
@@ -63,6 +63,14 @@ const Profile = () => {
   const showToast = (message, type = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleChatAdmin = (paymentId) => {
+    const phoneNumber = '6288294096100';
+    const message = encodeURIComponent(
+      `Halo Admin Nuansa SOLUTION,\n\nSaya ingin konfirmasi pembayaran saya yang sedang dalam proses. \n\n🆔 *ID Transaksi:* #${paymentId}\n\nMohon bantuannya untuk dipercepat aktivasinya. Terima kasih!`
+    );
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
   };
 
   // ========================================
@@ -394,7 +402,16 @@ const Profile = () => {
                             <Download size={14} /> {downloadingId === payment.id ? 'Loading...' : 'Invoice'}
                           </button>
                         ) : (
-                          <span className="status-label pending">Proses</span>
+                          <div className="flex flex-col gap-2 items-end">
+                            <span className="status-label pending">Proses</span>
+                            <button 
+                              className="download-btn-mini"
+                              style={{ borderColor: '#25D366', color: '#25D366' }}
+                              onClick={() => handleChatAdmin(payment.id)}
+                            >
+                              <MessageCircle size={12} /> Chat Admin
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
