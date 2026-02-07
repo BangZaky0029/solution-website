@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import { useNavigate } from 'react-router-dom';
@@ -8,21 +7,28 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import PremiumAccessModal from '../common/PremiumAccessModal';
 import { mapFeatureIcon } from '../../utils/mapFeatureIcon';
 import { Search, Filter, Grid, LayoutGrid } from 'lucide-react';
+import { useToast } from '../../hooks/useToast';
 
 const MAIN_SITE_URL = 'https://nuansasolution.id';
 
 const CATEGORIES = [
   { id: 'all', name: 'Semua Fitur', icon: <LayoutGrid size={18} /> },
-  { id: 'legal', name: 'Legal & Surat', icon: '📜' },
-  { id: 'bisnis', name: 'Bisnis & Invoicing', icon: '💼' },
-  { id: 'keuangan', name: 'Keuangan', icon: '💰' },
-  { id: 'umum', name: 'Lainnya', icon: '✨' }
+  { id: 'owned', name: 'Fitur Saya', icon: '⭐' },
+  { id: 'legal', name: 'Generator Surat Legal', icon: '📜' },
+  { id: 'bisnis', name: 'Dokumen Operasional & Bisnis', icon: '💼' },
+  { id: 'keuangan', name: 'Keuangan & HR Tools', icon: '💰' },
+];
+
+const EXCLUDED_CODES = [
+  'pos-kasir', 'crm', 'erp', 'e-learning', 'pencatatan-keuangan',
+  'pencatatan-uang', 'aplikasi-pos', 'aplikasi-crm', 'aplikasi-erp'
 ];
 
 const Features = () => {
   const { data: features, loading, error } = useFetch('/feature');
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -54,30 +60,63 @@ const Features = () => {
     fetchAccessDetails();
   }, [isAuthenticated]);
 
-  // Fungsi untuk menentukan kategori fitur berdasarkan kodenya
   const getCategoryByCode = (code = '') => {
     const c = code.toLowerCase();
-    if (c.includes('kuasa') || c.includes('pernyataan') || c.includes('perjanjian') || c.includes('permohonan')) return 'legal';
-    if (c.includes('invoice') || c.includes('penawaran') || c.includes('perintah') || c.includes('jalan')) return 'bisnis';
-    if (c.includes('calculator') || c.includes('slip-gaji')) return 'keuangan';
+    if (c.includes('kuasa') || c.includes('pernyataan') || c.includes('perjanjian') || c.includes('permohonan') || c.includes('keterangan') || c.includes('berita-acara')) return 'legal';
+    if (c.includes('invoice') || c.includes('penawaran') || c.includes('perintah') || c.includes('jalan') || c.includes('sewa') || c.includes('kontrak') || c.includes('jual-beli') || c.includes('tanda-terima') || c.includes('rekap') || c.includes('laporan-bisnis') || c.includes('custom')) return 'bisnis';
+    if (c.includes('calculator') || c.includes('slip-gaji') || c.includes('pph') || c.includes('pajak') || c.includes('akuntansi')) return 'keuangan';
     return 'umum';
   };
-
-  // Filter Logic
-  const filteredFeatures = useMemo(() => {
-    if (!features) return [];
-    return features.filter(f => {
-      const matchesSearch = f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = activeCategory === 'all' || getCategoryByCode(f.code) === activeCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [features, searchQuery, activeCategory]);
 
   const getFeatureAccessStatus = (featureCode) => {
     if (!isAuthenticated) return 'locked';
     if (accessLoading) return 'loading';
     return featureAccessStatus[featureCode] || 'premium';
+  };
+
+  const filteredFeatures = useMemo(() => {
+    if (!features) return [];
+    return features.filter(f => {
+      const isExcluded = EXCLUDED_CODES.some(excluded => f.code.toLowerCase().includes(excluded));
+      if (isExcluded) return false;
+
+      const matchesSearch = f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const category = getCategoryByCode(f.code);
+
+      let matchesCategory = false;
+      if (activeCategory === 'all') matchesCategory = true;
+      else if (activeCategory === 'owned') {
+        if (!isAuthenticated) matchesCategory = false;
+        else {
+          const status = getFeatureAccessStatus(f.code);
+          matchesCategory = (f.status === 'free' || status === 'subscribed' || status === 'free');
+        }
+      }
+      else matchesCategory = category === activeCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [features, searchQuery, activeCategory]);
+
+  const handleCategoryChange = (catId) => {
+    setActiveCategory(catId);
+    if (catId === 'owned') {
+      if (!isAuthenticated) return;
+
+      let count = 0;
+      if (features) {
+        count = features.filter(f => {
+          const isExcluded = EXCLUDED_CODES.some(excluded => f.code.toLowerCase().includes(excluded));
+          if (isExcluded) return false;
+          const status = getFeatureAccessStatus(f.code);
+          return (f.status === 'free' || status === 'subscribed');
+        }).length;
+      }
+
+      showToast(`🎉 Anda memiliki ${count} Fitur Aktif dari paket Anda`, 'success');
+    }
   };
 
   const handleFeatureClick = (feature) => {
@@ -123,7 +162,6 @@ const Features = () => {
           )}
         </div>
 
-        {/* Search & Filter Bar */}
         <div className="features-controls">
           <div className="search-box-wrapper">
             <Search className="search-icon" size={20} />
@@ -140,7 +178,7 @@ const Features = () => {
             {CATEGORIES.map(cat => (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`filter-chip ${activeCategory === cat.id ? 'active' : ''}`}
               >
                 <span className="chip-icon">{cat.icon}</span>
@@ -150,7 +188,6 @@ const Features = () => {
           </div>
         </div>
 
-        {/* Content */}
         {loading || accessLoading ? (
           <LoadingSpinner />
         ) : error ? (
@@ -211,7 +248,7 @@ const Features = () => {
       <PremiumAccessModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        onUpgrade={() => navigate('/payment')}
+        onUpgrade={() => navigate('/pricing')}
         featureName={selectedFeature?.name}
         packageName={userPackageInfo?.package_name}
       />

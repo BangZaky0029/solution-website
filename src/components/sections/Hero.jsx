@@ -6,7 +6,7 @@ import logo from '../../assets/images/nuansaLogo.png';
 import { ChevronRight, Zap, Shield, CheckCircle } from 'lucide-react';
 
 const Hero = () => {
-  const { isAuthenticated } = useAuth();  
+  const { isAuthenticated } = useAuth();
 
   return (
     <section className="hero-section-modern">
@@ -17,16 +17,16 @@ const Hero = () => {
               <span className="ann-badge">New</span>
               <span className="ann-text">Bonus Trial 3 Hari untuk Pengguna Baru! 🎁</span>
             </div>
-            
+
             <h1>Platform Digital <span className="text-gradient">SOLUTION</span> Untuk Masa Depan.</h1>
             <p>Satu akun untuk semua kebutuhan tools produktivitas Anda. Kelola surat, invoicing, dan berbagai dokumen bisnis dalam satu platform terpadu yang aman dan efisien.</p>
-            
+
             <div className="hero-actions-refined">
               {isAuthenticated ? (
                 <>
-                  <Link to="/profile">
+                  <Link to="/features">
                     <button className="btn-hero-primary">
-                      Akses Dashboard <ChevronRight size={18} />
+                      Akses Features <ChevronRight size={18} />
                     </button>
                   </Link>
                   <a href="#features" className="btn-hero-outline">

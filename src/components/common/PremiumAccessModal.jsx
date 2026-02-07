@@ -23,16 +23,19 @@ const PremiumAccessModal = ({
         <h3 className="modal-title">Akses Terbatas</h3>
 
         <p className="modal-description">
-          Fitur <strong>{featureName}</strong> tidak tersedia pada paket yang
-          sedang Anda gunakan.
+          Fitur <strong>{featureName}</strong> terkunci atau memerlukan paket lebih tinggi.
         </p>
 
         {packageName && (
           <div className="modal-package-info">
-            📦 Paket aktif Anda:
-            <strong> {packageName}</strong>
+            ℹ️ Paket aktif Anda: <strong>{packageName}</strong><br />
+            <span style={{ fontSize: '0.9em', color: '#64748b' }}>(Belum mencakup fitur ini)</span>
           </div>
         )}
+
+        <p className="modal-hint">
+          Silakan cek opsi paket lainnya untuk membuka akses fitur ini.
+        </p>
 
         <div className="modal-actions">
           <button className="btn btn-outline" onClick={onClose}>

@@ -14,13 +14,13 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-5 md:px-10">
         {/* Grid layout: 1 kolom di mobile, 4 kolom di desktop */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-          
+
           {/* BRAND SECTION */}
           <div>
-            <img 
-              src={logo} 
-              alt="Nuansasolution" 
-              className="w-32 mb-6" 
+            <img
+              src={logo}
+              alt="Nuansasolution"
+              className="w-32 mb-6"
             />
             <p className="text-gray-400 text-sm leading-relaxed">
               Platform pembayaran terpadu dengan berbagai tools dan features unggulan.
@@ -32,17 +32,17 @@ const Footer = () => {
             <h4 className="font-bold mb-4 text-gray-300 text-lg">Product</h4>
             <ul className="space-y-3 text-sm text-gray-400">
               <li>
-                <Link to="/#features" className="hover:text-white transition duration-200">
+                <Link to="/features" className="hover:text-white transition duration-200">
                   Features
                 </Link>
               </li>
               <li>
-                <Link to="/#pricing" className="hover:text-white transition duration-200">
+                <Link to="/pricing" className="hover:text-white transition duration-200">
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/#faq" className="hover:text-white transition duration-200">
+                <Link to="/faq" className="hover:text-white transition duration-200">
                   FAQ
                 </Link>
               </li>

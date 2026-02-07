@@ -3,7 +3,7 @@
 // Enhanced Toast System with Multiple Features
 // =========================================
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 const ToastContext = createContext(null);
@@ -11,10 +11,21 @@ const ToastContext = createContext(null);
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
+  // Inject styles
+  useEffect(() => {
+    const styleId = 'toast-styles';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = toastStyles;
+      document.head.appendChild(style);
+    }
+  }, []);
+
   const showToast = useCallback((message, type = 'info', duration = 3000) => {
     const id = Date.now() + Math.random();
     const newToast = { id, message, type, duration };
-    
+
     setToasts(prev => [...prev, newToast]);
 
     // Auto remove after duration
@@ -81,17 +92,17 @@ const Toast = ({ id, message, type, onClose, duration }) => {
   };
 
   return (
-    <div 
+    <div
       className={`toast ${colors[type]} animate-slide-in`}
       style={{ '--duration': `${duration}ms` }}
     >
       <div className="toast-icon">{icons[type]}</div>
-      
+
       <div className="toast-content">
         <p className="toast-message">{message}</p>
       </div>
-      
-      <button 
+
+      <button
         onClick={onClose}
         className="toast-close"
         aria-label="Close notification"

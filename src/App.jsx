@@ -3,6 +3,7 @@
 
 import { Routes, Route } from 'react-router-dom';
 import { ToastProvider } from './hooks/useToast';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
@@ -21,6 +22,7 @@ import Profile from './pages/Profile/Profile';
 import PaymentPage from './pages/Payment/PaymentPage';
 import PaymentConfirmation from './pages/Payment/PaymentConfirmation';
 import FeaturesPage from './pages/Features/FeaturesPage';
+import PricingPage from './pages/PricingPage';
 import NotFound from './pages/NotFound';
 
 // Info Pages
@@ -39,6 +41,7 @@ import './App.css';
 function App() {
   return (
     <ToastProvider>
+      <ScrollToTop />
       <Routes>
 
         {/* ================= AUTH (NO HEADER / FOOTER) ================= */}
@@ -53,7 +56,7 @@ function App() {
         {/* ================= MAIN (WITH HEADER / FOOTER) ================= */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          
+
           {/* 🔒 Protected Routes */}
           <Route path="/profile" element={
             <ProtectedRoute>
@@ -70,8 +73,9 @@ function App() {
               <PaymentConfirmation />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
 
           {/* Info Pages */}
           <Route path="/about" element={<About />} />

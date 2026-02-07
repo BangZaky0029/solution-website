@@ -279,7 +279,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="profile-header-cta">
-              <Button variant="primary" size="lg" className="pulse-btn" onClick={() => navigate('/payment')}>
+              <Button variant="primary" size="lg" className="pulse-btn" onClick={() => navigate('/pricing')}>
                 <ShieldCheck size={20} /> Upgrade Premium
               </Button>
             </div>
@@ -326,7 +326,7 @@ const Profile = () => {
                           </div>
                         </div>
 
-                        <button className="extend-sub-link" onClick={() => navigate('/payment')}>
+                        <button className="extend-sub-link" onClick={() => navigate('/pricing')}>
                           Perpanjang Masa Aktif <ArrowRight size={16} />
                         </button>
                       </div>
@@ -336,7 +336,7 @@ const Profile = () => {
                   <div className="empty-sub-state">
                     <AlertCircle size={40} />
                     <p>Anda belum berlangganan paket apapun.</p>
-                    <Button variant="outline" onClick={() => navigate('/payment')}>Lihat Paket Layanan</Button>
+                    <Button variant="outline" onClick={() => navigate('/pricing')}>Lihat Paket Layanan</Button>
                   </div>
                 )}
               </div>

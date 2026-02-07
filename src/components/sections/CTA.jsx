@@ -15,7 +15,7 @@ const CTA = () => {
           <div className="cta-content">
             <h2 className="cta-title">Siap Bergabung dengan Masa Depan?</h2>
             <p className="cta-description">
-              Dapatkan akses penuh ke semua fitur dan tools produktivitas kami. 
+              Dapatkan akses penuh ke semua fitur dan tools produktivitas kami.
               Mulai perjalanan efisiensi bisnis Anda bersama <strong>Gateway SOLUTION</strong> hari ini.
             </p>
 
@@ -25,14 +25,14 @@ const CTA = () => {
                   Daftar Gratis Sekarang
                 </Button>
               </Link>
-              <a href="#pricing">
+              <Link to="/pricing">
                 <Button variant="outline" size="lg" className="cta-btn-alt">
                   Lihat Paket Layanan
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
-          
+
           <div className="cta-decoration">
             <div className="blob b1"></div>
             <div className="blob b2"></div>

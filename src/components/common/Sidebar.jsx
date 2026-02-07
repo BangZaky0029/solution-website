@@ -60,7 +60,11 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
         <div className="sidebar-content">
           {/* USER */}
           {isAuthenticated ? (
-            <div className="sidebar-user">
+            <div
+              className="sidebar-user"
+              onClick={() => handleNavClick('/profile')}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="sidebar-user-avatar">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
@@ -97,19 +101,25 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
               🏠 Home
             </button>
 
-            {showLandingMenu && (
-              <>
-                <a href="#features" className="sidebar-nav-item" onClick={onClose}>
-                  ✨ Features
-                </a>
-                <a href="#pricing" className="sidebar-nav-item" onClick={onClose}>
-                  💰 Pricing
-                </a>
-                <a href="#faq" className="sidebar-nav-item" onClick={onClose}>
-                  ❓ FAQ
-                </a>
-              </>
-            )}
+            <button
+              className="sidebar-nav-item"
+              onClick={() => handleNavClick('/features')}
+            >
+              ✨ Features
+            </button>
+            <button
+              className="sidebar-nav-item"
+              onClick={() => handleNavClick('/pricing')}
+            >
+              💰 Pricing
+            </button>
+
+            <button
+              className="sidebar-nav-item"
+              onClick={() => handleNavClick('/faq')}
+            >
+              ❓ FAQ
+            </button>
           </div>
 
           {/* INFO */}

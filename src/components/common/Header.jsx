@@ -51,13 +51,10 @@ const Header = () => {
           <div className="header-nav-desktop">
             <Link to="/" className="header-nav-link">Home</Link>
 
-            {isHomePage && (
-              <>
-                <a href="#features" className="header-nav-link">Features</a>
-                <a href="#pricing" className="header-nav-link">Pricing</a>
-                <a href="#faq" className="header-nav-link">FAQ</a>
-              </>
-            )}
+            <Link to="/features" className="header-nav-link">Features</Link>
+            <Link to="/pricing" className="header-nav-link">Pricing</Link>
+
+            <Link to="/faq" className="header-nav-link">FAQ</Link>
           </div>
 
           {/* AUTH */}

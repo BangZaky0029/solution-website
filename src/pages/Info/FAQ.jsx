@@ -16,7 +16,7 @@ const FAQ = () => {
   };
 
   return (
-    <section id="faq" className="faq-section-refined">
+    <section id="faq" className="faq-section-refined pt-28 pb-12">
       <div className="container-max">
         <div className="section-header-refined">
           <div className="section-badge">
@@ -31,12 +31,12 @@ const FAQ = () => {
           {FAQ_DATA.map((item) => {
             const isOpen = openId === item.id;
             return (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 className={`faq-card-refined ${isOpen ? 'is-open' : ''}`}
               >
-                <button 
-                  className="faq-trigger" 
+                <button
+                  className="faq-trigger"
                   onClick={() => toggleFAQ(item.id)}
                   aria-expanded={isOpen}
                 >
@@ -45,7 +45,7 @@ const FAQ = () => {
                     <ChevronDown size={20} className={`faq-chevron ${isOpen ? 'rotate' : ''}`} />
                   </div>
                 </button>
-                
+
                 <div className={`faq-content-wrapper ${isOpen ? 'show' : ''}`}>
                   <div className="faq-answer">
                     <div className="answer-inner">
