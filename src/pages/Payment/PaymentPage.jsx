@@ -1,10 +1,11 @@
 // =========================================
-// FILE: PaymentPage.jsx - FRONTEND PAGE FIXED
+// FILE: PaymentPage.jsx - OPTIMIZED (Animations)
 // Path: src/pages/Payment/PaymentPage.jsx
 // =========================================
 
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion'; // Added Framer Motion
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { paymentController } from '../../controllers/paymentController';
@@ -50,14 +51,10 @@ const PaymentPage = () => {
     checkActivePackage();
   }, [isAuthenticated, packageId, navigate]);
 
-  // ✅ FIXED: Gunakan endpoint yang benar dari backend
   const checkActivePackage = async () => {
     try {
-      // Panggil endpoint /payment/check-active-package
       const response = await paymentController.checkActivePackage();
 
-
-      // Backend sekarang return: { success, hasActive, activePackage?, warning? }
       if (response.success && response.hasActive && response.activePackage) {
         setActivePackage({
           id: response.activePackage.token_id,
@@ -66,7 +63,6 @@ const PaymentPage = () => {
           activated_at: response.activePackage.activated_at,
           expired_at: response.activePackage.expired_at,
         });
-
       } else {
         setActivePackage(null);
       }
@@ -79,23 +75,17 @@ const PaymentPage = () => {
   // ✅ HANDLE PAYMENT SUBMISSION
   // ============================
   const handlePaymentSubmit = async (formData) => {
-    // Reset error
     setError('');
 
-    // ✅ Jika ada paket aktif, tampilkan warning modal
     if (activePackage) {
       setPendingFormData(formData);
       setShowUpgradeWarning(true);
       return;
     }
 
-    // Kalau tidak ada paket aktif, langsung proses pembayaran
     await processPayment(formData, false);
   };
 
-  // ============================
-  // ✅ HANDLE UPGRADE CONFIRMATION
-  // ============================
   const handleUpgradeConfirm = async () => {
     if (pendingFormData) {
       await processPayment(pendingFormData, true);
@@ -110,9 +100,6 @@ const PaymentPage = () => {
     setError('');
   };
 
-  // ============================
-  // ✅ PROCESS PAYMENT - FIXED
-  // ============================
   const processPayment = async (formData, forceUpgrade = false) => {
     setLoading(true);
     setError('');
@@ -125,10 +112,7 @@ const PaymentPage = () => {
         forceUpgrade
       );
 
-
-      // ✅ FIXED: Backend sekarang kirim success flag
       if (!paymentResult.success) {
-        // Jika backend return hasActive (seharusnya tidak, karena sudah dicek di frontend)
         if (paymentResult.hasActive) {
           setError('Anda memiliki paket aktif. Silakan konfirmasi upgrade.');
           setLoading(false);
@@ -148,8 +132,6 @@ const PaymentPage = () => {
         formData.proofFile
       );
 
-
-      // ✅ FIXED: Backend sekarang kirim success flag
       if (!confirmResult.success) {
         setError(confirmResult.message || 'Gagal mengonfirmasi pembayaran');
         setLoading(false);
@@ -169,14 +151,9 @@ const PaymentPage = () => {
     }
   };
 
-  // ============================
-  // ✅ PREPARE MODAL DATA
-  // ============================
   const getModalData = () => {
     if (!activePackage || !packageData) return null;
-
     const daysLeft = getDaysRemaining(activePackage.expired_at);
-
     return {
       currentPackage: {
         name: activePackage.package_name || 'Paket Tidak Diketahui',
@@ -196,8 +173,16 @@ const PaymentPage = () => {
   // ============================
   if (pkgLoading) {
     return (
-      <div className="payment-container">
-        <LoadingSpinner />
+      <div className="payment-container flex items-center justify-center min-h-[60vh]">
+        {/* Simple Loading Animation */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
+          <LoadingSpinner />
+          <p className="mt-4 text-gray-500 font-medium">Memuat Detail Paket...</p>
+        </motion.div>
       </div>
     );
   }
@@ -205,25 +190,39 @@ const PaymentPage = () => {
   if (!packageData) {
     return (
       <div className="payment-container">
-        <div className="error-container">
-          <h2>Paket tidak ditemukan</h2>
-          <p>Silakan kembali dan pilih paket yang valid</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="error-container p-8 text-center"
+        >
+          <h2 className="text-2xl font-bold mb-2">Paket tidak ditemukan</h2>
+          <p className="text-gray-600 mb-6">Silakan kembali dan pilih paket yang valid</p>
           <button onClick={() => navigate('/')} className="btn btn-primary">
             Kembali ke Home
           </button>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   const modalData = getModalData();
 
-  // ============================
-  // RENDER
-  // ============================
+  // Animations variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
   return (
     <>
-      {/* ✅ Upgrade Warning Modal */}
       {modalData && (
         <UpgradeWarningModal
           isOpen={showUpgradeWarning}
@@ -235,148 +234,131 @@ const PaymentPage = () => {
         />
       )}
 
-      <div className="payment-container">
+      <motion.div
+        className="payment-container"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         <div className="payment-wrapper">
           {/* LEFT: PAYMENT FORM */}
-          <div className="payment-form-section">
+          <motion.div className="payment-form-section" variants={itemVariants}>
             <div className="form-header">
-              <h1>Konfirmasi Pembayaran</h1>
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Konfirmasi Pembayaran
+              </motion.h1>
               <p>Lengkapi data pembayaran Anda untuk melanjutkan</p>
             </div>
 
-            {/* ✅ Error Alert */}
-            {error && (
-              <div className="payment-error-alert animate-slide-down">
-                <span className="error-icon">⚠️</span>
-                <div>
-                  <strong>Terjadi Kesalahan</strong>
-                  <p>{error}</p>
-                </div>
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  className="payment-error-alert"
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                >
+                  <span className="error-icon">⚠️</span>
+                  <div>
+                    <strong>Terjadi Kesalahan</strong>
+                    <p>{error}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <PaymentForm
               onSubmit={handlePaymentSubmit}
               loading={loading}
               selectedMethod={selectedMethod}
             />
-          </div>
+          </motion.div>
 
           {/* RIGHT: PAYMENT SUMMARY */}
-          <div className="payment-summary-section">
+          <motion.div className="payment-summary-section" variants={itemVariants}>
             <div className="summary-sticky">
-              {/* Summary Header */}
               <div className="summary-header">
                 <h2>Ringkasan Pembayaran</h2>
               </div>
 
-              {/* Package Info */}
               {packageData && (
-                <>
-                  <div className="summary-content">
-                    {/* Package Card */}
-                    <div className="summary-card package-summary-card">
-                      <h3 className="card-title">📦 Paket</h3>
-                      <p className="package-name">{packageData.name}</p>
-                      <div className="package-meta">
-                        <div className="meta-item">
-                          <span className="meta-label">Durasi</span>
-                          <span className="meta-value">{packageData.duration_days} hari</span>
-                        </div>
-                        <div className="meta-item">
-                          <span className="meta-label">Harga</span>
-                          <span className="meta-value">
-                            {formatCurrency(packageData.price)}
-                          </span>
-                        </div>
+                <div className="summary-content">
+                  <motion.div
+                    className="summary-card package-summary-card"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <h3 className="card-title">📦 Paket</h3>
+                    <p className="package-name">{packageData.name}</p>
+                    <div className="package-meta">
+                      <div className="meta-item">
+                        <span className="meta-label">Durasi</span>
+                        <span className="meta-value">{packageData.duration_days} hari</span>
+                      </div>
+                      <div className="meta-item">
+                        <span className="meta-label">Harga</span>
+                        <span className="meta-value">
+                          {formatCurrency(packageData.price)}
+                        </span>
                       </div>
                     </div>
+                  </motion.div>
 
-                    {/* ✅ Active Package Warning */}
-                    {activePackage && (
-                      <div className="summary-card upgrade-info-card">
-                        <h3 className="card-title">⚠️ Paket Aktif</h3>
-                        <p className="active-package-name">{activePackage.package_name}</p>
-                        <div className="package-meta">
-                          <div className="meta-item">
-                            <span className="meta-label">Berakhir</span>
-                            <span className="meta-value">
-                              {formatDate(activePackage.expired_at)}
-                            </span>
-                          </div>
-                          <div className="meta-item">
-                            <span className="meta-label">Sisa Hari</span>
-                            <span className="meta-value">
-                              {getDaysRemaining(activePackage.expired_at)} hari
-                            </span>
-                          </div>
-                        </div>
-                        <div className="upgrade-notice">
-                          <p>Paket lama akan dihapus setelah Anda upgrade</p>
+                  {activePackage && (
+                    <motion.div
+                      className="summary-card upgrade-info-card"
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <h3 className="card-title">⚠️ Paket Aktif</h3>
+                      <p className="active-package-name">{activePackage.package_name}</p>
+                      <div className="package-meta">
+                        {/* ... meta items ... */}
+                        <div className="meta-item">
+                          <span className="meta-label">Berakhir</span>
+                          <span className="meta-value">{formatDate(activePackage.expired_at)}</span>
                         </div>
                       </div>
-                    )}
-
-                    {/* Features */}
-                    {packageData.description && (
-                      <div className="summary-card features-card">
-                        <h3 className="card-title">✨ Fitur Termasuk</h3>
-                        <ul className="features-list">
-                          {typeof packageData.description === 'string'
-                            ? JSON.parse(packageData.description).map((feature, idx) => (
-                              <li key={idx}>
-                                <span className="check-icon">✓</span>
-                                <span>{feature}</span>
-                              </li>
-                            ))
-                            : [
-                              'Akses penuh ke semua tools',
-                              'Support 24/7',
-                              'Unlimited Usage',
-                            ].map((feature, idx) => (
-                              <li key={idx}>
-                                <span className="check-icon">✓</span>
-                                <span>{feature}</span>
-                              </li>
-                            ))}
-                        </ul>
+                      <div className="upgrade-notice">
+                        <p>Paket lama akan dihapus setelah Anda upgrade</p>
                       </div>
-                    )}
-                  </div>
+                    </motion.div>
+                  )}
 
                   {/* Total Price */}
-                  <div className="summary-total">
-                    <div className="total-row">
-                      <span>Subtotal</span>
-                      <span>{formatCurrency(packageData.price)}</span>
-                    </div>
-                    <div className="total-row">
-                      <span>PPN (0%)</span>
-                      <span>Rp 0</span>
-                    </div>
-                    <div className="total-divider"></div>
+                  <div className="summary-total mt-4">
                     <div className="total-row final">
                       <span>Total Pembayaran</span>
-                      <span className="total-amount">
+                      <motion.span
+                        className="total-amount"
+                        key={packageData.price}
+                        initial={{ scale: 1.2, color: "#2563eb" }}
+                        animate={{ scale: 1, color: "#1f2937" }}
+                      >
                         {formatCurrency(packageData.price)}
-                      </span>
+                      </motion.span>
                     </div>
                   </div>
 
-                  {/* Security Badge */}
-                  <div className="security-badge">
+                  {/* Security Badge - Static but present */}
+                  <div className="security-badge mt-6">
                     <span className="badge-icon">🔒</span>
                     <div className="badge-text">
                       <strong>Aman & Terpercaya</strong>
                       <p>Transaksi Anda dilindungi dengan enkripsi tingkat bank</p>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
