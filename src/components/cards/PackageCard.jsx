@@ -33,8 +33,8 @@ const PackageCard = ({
     setIsLoading(true);
     try {
       navigate(`/payment?packageId=${id}`);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Silent error handling
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +65,7 @@ const PackageCard = ({
           <span>Paling Populer</span>
         </div>
       )}
-      
+
       <div className="pkg-header">
         <h3 className="pkg-name">{name}</h3>
         {hasDiscount && (

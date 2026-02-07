@@ -1,5 +1,4 @@
-// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\components\common\Header.jsx
-// Fixed - Better logout flow
+// Header component - Clean production version
 
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -21,40 +20,22 @@ const Header = () => {
   const isHomePage = location.pathname === '/';
 
   const confirmLogout = () => {
-    console.log('========================================');
-    console.log('🚪 LOGOUT - Process started');
-    console.log('========================================');
-
     setIsLoggingOut(true);
-    
+
     try {
-      // Call logout
       logout();
-      
-      console.log('✅ Logout successful');
-      
-      // Close modal
       setShowLogoutConfirm(false);
-      
-      // Show toast
       showToast('✅ Logout berhasil!', 'success');
-      
-      // Navigate to login after a short delay
+
       setTimeout(() => {
-        console.log('➡️ Navigating to /login');
         navigate('/login', { replace: true });
         setIsLoggingOut(false);
       }, 500);
-      
-    } catch (error) {
-      console.error('❌ Logout error:', error);
+
+    } catch {
       showToast('Terjadi kesalahan saat logout', 'error');
       setIsLoggingOut(false);
     }
-
-    console.log('========================================');
-    console.log('🏁 LOGOUT - Process completed');
-    console.log('========================================');
   };
 
   return (

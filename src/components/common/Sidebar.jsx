@@ -1,6 +1,4 @@
-// =========================================
-// FILE: Sidebar.jsx - FIXED VERSION
-// =========================================
+// Sidebar component - Clean production version
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,41 +21,23 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
   };
 
   const handleConfirmLogout = () => {
-    console.log('========================================');
-    console.log('🚪 LOGOUT - Sidebar Process Started');
-    console.log('========================================');
-
     setIsLoggingOut(true);
 
     try {
-      // Call logout
       logout();
-
-      console.log('✅ Logout successful from sidebar');
-
-      // Close modal and sidebar
       setShowLogoutModal(false);
       onClose();
-
-      // Show toast - FORMAT YANG BENAR
       showToast('✅ Logout berhasil!', 'success');
 
-      // Navigate to login
       setTimeout(() => {
-        console.log('➡️ Navigating to /login from sidebar');
         navigate('/login', { replace: true });
         setIsLoggingOut(false);
       }, 500);
 
-    } catch (error) {
-      console.error('❌ Logout error from sidebar:', error);
+    } catch {
       showToast('Terjadi kesalahan saat logout', 'error');
       setIsLoggingOut(false);
     }
-
-    console.log('========================================');
-    console.log('🏁 LOGOUT - Sidebar Process Completed');
-    console.log('========================================');
   };
 
   return (

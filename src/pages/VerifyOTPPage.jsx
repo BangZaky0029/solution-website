@@ -1,5 +1,4 @@
-// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\pages\VerifyOTPPage.jsx
-// COMPLETE VERSION - OTP Display dengan Debug
+// VerifyOTPPage - Clean production version
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -15,20 +14,7 @@ const VerifyOTPPage = () => {
   const { verifyOTP, resendOTP } = useAuth();
   const { showToast } = useToast();
 
-  // Get data from navigation state
   const { email, otp: initialOtp, otpDuration = 30, userName } = location.state || {};
-
-  // 🔥 DEBUG - Cek data yang diterima
-  useEffect(() => {
-    console.log('========================================');
-    console.log('🔍 DEBUG - VerifyOTPPage State:');
-    console.log('📧 Email:', email);
-    console.log('🔐 OTP:', initialOtp);
-    console.log('⏱️ Duration:', otpDuration);
-    console.log('👤 Name:', userName);
-    console.log('📦 Full State:', location.state);
-    console.log('========================================');
-  }, [location.state]);
 
   const [otp, setOtp] = useState(initialOtp || '');
   const [inputOtp, setInputOtp] = useState('');
@@ -38,10 +24,9 @@ const VerifyOTPPage = () => {
   const [timeLeft, setTimeLeft] = useState(otpDuration);
   const [isExpired, setIsExpired] = useState(false);
 
-  // Redirect jika tidak ada email
+  // Redirect if no email
   useEffect(() => {
     if (!email) {
-      console.error('❌ Email tidak ditemukan! Redirect ke register...');
       showToast('Sesi tidak valid. Silakan registrasi ulang.', 'error');
       navigate('/register');
     }
@@ -51,7 +36,6 @@ const VerifyOTPPage = () => {
   useEffect(() => {
     if (timeLeft <= 0) {
       setIsExpired(true);
-      console.log('⏰ OTP EXPIRED!');
       return;
     }
 
@@ -68,17 +52,14 @@ const VerifyOTPPage = () => {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // Copy OTP ke clipboard
+  // Copy OTP to clipboard
   const handleCopyOTP = async () => {
     try {
       await navigator.clipboard.writeText(otp);
       setCopied(true);
       showToast('✅ OTP berhasil disalin!', 'success');
-      console.log('📋 OTP copied:', otp);
-      
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error('❌ Failed to copy OTP:', error);
+    } catch {
       showToast('Gagal menyalin OTP', 'error');
     }
   };
@@ -102,28 +83,24 @@ const VerifyOTPPage = () => {
       return;
     }
 
-    console.log('🔐 Verifying OTP:', inputOtp);
     setLoading(true);
-    
+
     try {
       await verifyOTP(email, inputOtp);
-      console.log('✅ OTP Verification SUCCESS!');
       showToast('✅ Verifikasi berhasil! Silakan login.', 'success', 3000);
 
-        if (location.state?.trialPackage) {
-            const { packageName, durationDays } = location.state.trialPackage;
-            setTimeout(() => {
-                showToast(`🎉 Trial berhasil diaktifkan: ${packageName} (${durationDays} hari)`, 'success', 5000);
-            }, 500);
-        }
-
-        // navigasi setelah toast muncul
+      if (location.state?.trialPackage) {
+        const { packageName, durationDays } = location.state.trialPackage;
         setTimeout(() => {
-            navigate('/login');
-        }, 2000); // 0.5s delay + 5s toast
+          showToast(`🎉 Trial berhasil diaktifkan: ${packageName} (${durationDays} hari)`, 'success', 5000);
+        }, 500);
+      }
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
 
     } catch (error) {
-      console.error('❌ OTP Verification FAILED:', error);
       const message = error.response?.data?.message || 'Verifikasi gagal';
       showToast(message, 'error');
     } finally {
@@ -133,22 +110,18 @@ const VerifyOTPPage = () => {
 
   // Handle Resend OTP
   const handleResend = async () => {
-    console.log('🔄 Resending OTP for:', email);
     setResending(true);
-    
+
     try {
       const response = await resendOTP(email);
-      console.log('✅ Resend OTP SUCCESS:', response);
-      
-      // Update OTP baru
+
       setOtp(response.otp);
       setInputOtp('');
       setTimeLeft(response.otpDuration || 30);
       setIsExpired(false);
-      
+
       showToast('🎉 OTP baru telah dibuat!', 'success');
     } catch (error) {
-      console.error('❌ Resend OTP FAILED:', error);
       const message = error.response?.data?.message || 'Gagal mengirim OTP';
       showToast(message, 'error');
     } finally {
@@ -156,12 +129,9 @@ const VerifyOTPPage = () => {
     }
   };
 
-  // Format waktu countdown
-  const formatTime = (seconds) => {
-    return `${seconds}s`;
-  };
+  const formatTime = (seconds) => `${seconds}s`;
 
-  // Jika tidak ada OTP dari backend (fallback)
+  // Fallback if no OTP from backend
   if (!otp && email) {
     return (
       <div className="auth-container">
@@ -177,12 +147,8 @@ const VerifyOTPPage = () => {
           <div className="alert alert-warning">
             <AlertCircle size={20} />
             <div>
-              <strong>Debug Info:</strong>
-              <ul>
-                <li>Email: {email || 'Tidak ada'}</li>
-                <li>OTP: {initialOtp || 'Tidak diterima dari backend'}</li>
-                <li>State: {JSON.stringify(location.state)}</li>
-              </ul>
+              <strong>Info:</strong>
+              <p>Email: {email || 'Tidak ada'}</p>
             </div>
           </div>
 
@@ -208,18 +174,18 @@ const VerifyOTPPage = () => {
           </p>
         </div>
 
-        {/* 🔥 OTP Display Box - INI YANG PENTING */}
+        {/* OTP Display Box */}
         <div className="otp-display-box">
           <div className="otp-header">
             <Clock size={20} />
             <span>Kode OTP Anda</span>
           </div>
-          
+
           <div className="otp-code-container">
             <div className={`otp-code ${isExpired ? 'expired' : ''}`}>
               {otp || '******'}
             </div>
-            
+
             {!isExpired && (
               <button
                 onClick={handleCopyOTP}

@@ -1,7 +1,4 @@
-// =========================================
-// FILE: src/services/featureAccessService.js - NEW
 // Feature Access Management Service
-// =========================================
 
 import api from './api';
 
@@ -17,8 +14,7 @@ export const featureAccessService = {
     try {
       const response = await api.get('/users/accessible-features');
       return response.data;
-    } catch (error) {
-      console.error('Error getting accessible features:', error);
+    } catch {
       return [];
     }
   },
@@ -34,8 +30,7 @@ export const featureAccessService = {
         feature_code: featureCode
       });
       return response.data.allowed;
-    } catch (error) {
-      console.error('Error checking feature access:', error);
+    } catch {
       return false;
     }
   },
@@ -48,8 +43,7 @@ export const featureAccessService = {
     try {
       const response = await api.get('/users/feature-access-details');
       return response.data;
-    } catch (error) {
-      console.error('Error getting feature access details:', error);
+    } catch {
       return {
         package_name: '',
         active_features: [],
@@ -66,8 +60,7 @@ export const featureAccessService = {
     try {
       const response = await api.get('/users/feature-access-status');
       return response.data?.data || {};
-    } catch (error) {
-      console.error('Error getting feature access status:', error);
+    } catch {
       return {};
     }
   }

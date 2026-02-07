@@ -28,7 +28,7 @@ const PaymentPage = () => {
   const [selectedMethod] = useState('QRIS');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // ✅ State untuk warning modal
   const [showUpgradeWarning, setShowUpgradeWarning] = useState(false);
   const [activePackage, setActivePackage] = useState(null);
@@ -55,8 +55,7 @@ const PaymentPage = () => {
     try {
       // Panggil endpoint /payment/check-active-package
       const response = await paymentController.checkActivePackage();
-      
-      console.log('Check active package response:', response);
+
 
       // Backend sekarang return: { success, hasActive, activePackage?, warning? }
       if (response.success && response.hasActive && response.activePackage) {
@@ -67,14 +66,11 @@ const PaymentPage = () => {
           activated_at: response.activePackage.activated_at,
           expired_at: response.activePackage.expired_at,
         });
-        
-        console.log('Active package found:', response.activePackage);
+
       } else {
-        console.log('No active package');
         setActivePackage(null);
       }
-    } catch (err) {
-      console.error('Error checking active package:', err);
+    } catch {
       setActivePackage(null);
     }
   };
@@ -129,7 +125,6 @@ const PaymentPage = () => {
         forceUpgrade
       );
 
-      console.log('Create payment result:', paymentResult);
 
       // ✅ FIXED: Backend sekarang kirim success flag
       if (!paymentResult.success) {
@@ -139,7 +134,7 @@ const PaymentPage = () => {
           setLoading(false);
           return;
         }
-        
+
         setError(paymentResult.message || 'Gagal membuat payment');
         setLoading(false);
         return;
@@ -153,7 +148,6 @@ const PaymentPage = () => {
         formData.proofFile
       );
 
-      console.log('Confirm payment result:', confirmResult);
 
       // ✅ FIXED: Backend sekarang kirim success flag
       if (!confirmResult.success) {
@@ -170,7 +164,6 @@ const PaymentPage = () => {
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.message || 'Terjadi kesalahan';
       setError(errorMsg);
-      console.error('Payment error:', err);
     } finally {
       setLoading(false);
     }
@@ -331,21 +324,21 @@ const PaymentPage = () => {
                         <ul className="features-list">
                           {typeof packageData.description === 'string'
                             ? JSON.parse(packageData.description).map((feature, idx) => (
-                                <li key={idx}>
-                                  <span className="check-icon">✓</span>
-                                  <span>{feature}</span>
-                                </li>
-                              ))
+                              <li key={idx}>
+                                <span className="check-icon">✓</span>
+                                <span>{feature}</span>
+                              </li>
+                            ))
                             : [
-                                'Akses penuh ke semua tools',
-                                'Support 24/7',
-                                'Unlimited Usage',
-                              ].map((feature, idx) => (
-                                <li key={idx}>
-                                  <span className="check-icon">✓</span>
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
+                              'Akses penuh ke semua tools',
+                              'Support 24/7',
+                              'Unlimited Usage',
+                            ].map((feature, idx) => (
+                              <li key={idx}>
+                                <span className="check-icon">✓</span>
+                                <span>{feature}</span>
+                              </li>
+                            ))}
                         </ul>
                       </div>
                     )}

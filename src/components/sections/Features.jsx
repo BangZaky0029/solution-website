@@ -45,8 +45,8 @@ const Features = () => {
         setFeatureAccessStatus(accessStatus);
         const accessDetails = await featureAccessService.getFeatureAccessDetails();
         setUserPackageInfo(accessDetails);
-      } catch (err) {
-        console.error('Error fetching access details:', err);
+      } catch {
+        // Silent error handling
       } finally {
         setAccessLoading(false);
       }
@@ -67,8 +67,8 @@ const Features = () => {
   const filteredFeatures = useMemo(() => {
     if (!features) return [];
     return features.filter(f => {
-      const matchesSearch = f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesSearch = f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (f.description && f.description.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = activeCategory === 'all' || getCategoryByCode(f.code) === activeCategory;
       return matchesSearch && matchesCategory;
     });
@@ -112,7 +112,7 @@ const Features = () => {
           <div className="badge-intro">✨ POWERFUL TOOLS</div>
           <h2>Eksplorasi Fitur Unggulan</h2>
           <p>Tingkatkan produktivitas dengan berbagai pilihan tools yang telah kami kurasi khusus untuk Anda.</p>
-          
+
           {isAuthenticated && userPackageInfo && (
             <div className="user-access-banner animate-fade-in">
               <div className="access-info">
@@ -127,9 +127,9 @@ const Features = () => {
         <div className="features-controls">
           <div className="search-box-wrapper">
             <Search className="search-icon" size={20} />
-            <input 
-              type="text" 
-              placeholder="Cari fitur (contoh: Surat Kuasa)..." 
+            <input
+              type="text"
+              placeholder="Cari fitur (contoh: Surat Kuasa)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input-refined"
@@ -201,7 +201,7 @@ const Features = () => {
           <div className="features-status-box empty">
             <div className="empty-icon">🔍</div>
             <p>Fitur "{searchQuery}" tidak ditemukan dalam kategori ini.</p>
-            <button onClick={() => {setSearchQuery(''); setActiveCategory('all');}} className="btn-reset">
+            <button onClick={() => { setSearchQuery(''); setActiveCategory('all'); }} className="btn-reset">
               Lihat Semua Fitur
             </button>
           </div>

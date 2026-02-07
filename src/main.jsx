@@ -8,6 +8,7 @@ import App from './App.jsx';
 import { AuthProvider } from './hooks/useAuth';
 
 // ===== GLOBAL STYLES =====
+import './index.css';
 import './styles/Global.css';
 
 // ===== WEBSITE STYLES =====
@@ -20,7 +21,7 @@ import './styles/Style_forWebsite/Info.css';
 // ===== COMPONENT STYLES =====
 import './styles/components/Features.enhanced.css';
 import './styles/components/CTA.css'; // 🔥 TAMBAHKAN INI!
-import './styles/VerifyOTP.css'; 
+import './styles/VerifyOTP.css';
 
 // ===== MOBILE STYLES =====
 import './styles/Style_forMobile/Home.mobile.css';

@@ -1,5 +1,4 @@
-// C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\pages\Auth\Register.jsx
-// Fixed - No infinite redirect loop
+// Register Page - Clean production version
 
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
@@ -13,23 +12,13 @@ const Register = () => {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    console.log('🔍 Register Page - Auth Check:');
-    console.log('   Loading:', loading);
-    console.log('   User:', user);
-    console.log('   Has Redirected:', hasRedirected.current);
-
-    // Only redirect if:
-    // 1. Not loading
-    // 2. User exists
-    // 3. Haven't redirected yet
+    // Redirect if already logged in
     if (!loading && user && !hasRedirected.current) {
-      console.log('✅ User already logged in, redirecting to profile...');
       hasRedirected.current = true;
       navigate('/profile', { replace: true });
     }
   }, [user, loading, navigate]);
 
-  // Show loading state
   if (loading) {
     return (
       <div className="auth-container">
@@ -40,7 +29,6 @@ const Register = () => {
     );
   }
 
-  // Don't render form if user is logged in
   if (user) {
     return null;
   }

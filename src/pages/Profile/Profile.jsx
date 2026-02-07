@@ -20,8 +20,8 @@ import Button from '../../components/common/Button';
 import api from '../../services/api';
 import '../../styles/Style_forWebsite/Profile.css';
 import { mapFeatureIcon } from '../../utils/mapFeatureIcon';
-import { 
-  Mail, Phone, Package, CreditCard, 
+import {
+  Mail, Phone, Package, CreditCard,
   HelpCircle, ArrowRight, Download, Calendar,
   Clock, ShieldCheck, ExternalLink,
   AlertCircle, MessageCircle
@@ -51,8 +51,7 @@ const Profile = () => {
         if (response.data.success) {
           setPayments(response.data.data || []);
         }
-      } catch (err) {
-        console.error('Error fetching payments:', err);
+      } catch {
       } finally {
         setLoadingPayments(false);
       }
@@ -78,10 +77,10 @@ const Profile = () => {
   // ========================================
   const handleDownloadInvoice = (payment) => {
     setDownloadingId(payment.id);
-    
+
     // Path logo menggunakan URL absolut dari origin saat ini
     const logoUrl = `${window.location.origin}/nuansaLogo.png`;
-    
+
     const invoiceHTML = `
       <div style="font-family: 'Inter', sans-serif; color: #1e293b; padding: 40px; background: #fff; position: relative;">
           <style>
@@ -238,8 +237,7 @@ const Profile = () => {
         setDownloadingId(null);
         showToast('✅ Invoice berhasil diunduh');
       })
-      .catch((err) => {
-        console.error('PDF Generation Error:', err);
+      .catch(() => {
         setDownloadingId(null);
         showToast('❌ Gagal mengunduh invoice', 'error');
       });
@@ -292,7 +290,7 @@ const Profile = () => {
       {/* CONTENT GRID */}
       <section className="dashboard-content-section">
         <div className="container-max dashboard-grid">
-          
+
           <div className="dashboard-main-area">
             {/* SUBSCRIPTION */}
             <div className="dashboard-card-refined subscription-card-premium">
@@ -300,13 +298,13 @@ const Profile = () => {
                 <h3><Package size={20} /> Paket Aktif</h3>
                 <span className="info-text-small">Kelola langganan Anda</span>
               </div>
-              
+
               <div className="subscription-content">
                 {userTokens && userTokens.length > 0 ? (
                   userTokens.filter(t => t.is_active === 1).map(token => {
                     const daysLeft = getDaysRemaining(token.expired_at);
                     const progress = Math.min(100, (daysLeft / 365) * 100);
-                    
+
                     return (
                       <div key={token.id} className="active-sub-item">
                         <div className="sub-branding">
@@ -317,7 +315,7 @@ const Profile = () => {
                           </div>
                           <div className="sub-status-badge">AKTIF</div>
                         </div>
-                        
+
                         <div className="sub-progress-area">
                           <div className="progress-labels">
                             <span>Masa Berlaku</span>
@@ -327,7 +325,7 @@ const Profile = () => {
                             <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
                           </div>
                         </div>
-                        
+
                         <button className="extend-sub-link" onClick={() => navigate('/payment')}>
                           Perpanjang Masa Aktif <ArrowRight size={16} />
                         </button>
@@ -350,13 +348,13 @@ const Profile = () => {
                 <h3><ShieldCheck size={20} /> Launcher Aplikasi</h3>
                 <p className="section-subtitle">Klik fitur untuk mulai menggunakan</p>
               </div>
-              
+
               {packageInfo?.active_features?.length > 0 ? (
                 <div className="launcher-grid">
                   {packageInfo.active_features.map(feature => (
-                    <div 
-                      key={feature.id} 
-                      className="launcher-item" 
+                    <div
+                      key={feature.id}
+                      className="launcher-item"
                       onClick={() => handleOpenFeature(feature)}
                     >
                       <div className="launcher-icon-circle">
@@ -382,7 +380,7 @@ const Profile = () => {
               <div className="card-header-refined">
                 <h3><CreditCard size={20} /> Riwayat Transaksi</h3>
               </div>
-              
+
               <div className="history-timeline">
                 {payments.length > 0 ? (
                   payments.slice(0, 4).map(payment => (
@@ -394,7 +392,7 @@ const Profile = () => {
                       <div className="timeline-action">
                         <p className="tm-amount">{formatCurrency(payment.amount)}</p>
                         {payment.status === 'confirmed' ? (
-                          <button 
+                          <button
                             className="download-btn-mini"
                             onClick={() => handleDownloadInvoice(payment)}
                             disabled={downloadingId === payment.id}
@@ -404,7 +402,7 @@ const Profile = () => {
                         ) : (
                           <div className="flex flex-col gap-2 items-end">
                             <span className="status-label pending">Proses</span>
-                            <button 
+                            <button
                               className="download-btn-mini"
                               style={{ borderColor: '#25D366', color: '#25D366' }}
                               onClick={() => handleChatAdmin(payment.id)}

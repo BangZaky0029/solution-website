@@ -18,8 +18,8 @@ const UpgradePackagePage = ({ selectedPackage }) => {
       } else {
         setWarning(null);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Silent error handling
     }
   };
 
@@ -40,8 +40,8 @@ const UpgradePackagePage = ({ selectedPackage }) => {
       } else {
         alert('Payment berhasil dibuat, lanjutkan upload bukti');
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // Silent error handling
     }
   };
 
@@ -52,13 +52,13 @@ const UpgradePackagePage = ({ selectedPackage }) => {
           {warning}
           <button
             onClick={() => {
-                setForceUpgrade(true);
-                alert('Silakan submit ulang untuk melanjutkan upgrade paket.');
+              setForceUpgrade(true);
+              alert('Silakan submit ulang untuk melanjutkan upgrade paket.');
             }}
             className="ml-4 px-3 py-1 bg-yellow-500 text-white rounded"
-            >
+          >
             Lanjutkan Upgrade
-            </button>
+          </button>
         </div>
       )}
 
