@@ -12,33 +12,40 @@ import '../../styles/Style_forWebsite/Auth.css';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const { addToast } = useToast();
+  const { showToast } = useToast(); // ✅ Fix: destructure showToast
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState('request'); // request | verify | reset
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [requestError, setRequestError] = useState(''); // 🆕 State for server error
 
   const handleRequestOTP = async (phone) => {
     setLoading(true);
+    setRequestError(''); // Reset error
     try {
       const response = await passwordService.requestReset(phone);
 
       if (response.success) {
         setPhoneNumber(phone);
         setStep('verify');
-        
-        addToast(
-          response.otpSent 
+
+        showToast( // ✅ Fix: use showToast
+          response.otpSent
             ? '✅ Kode OTP telah dikirim ke WhatsApp Anda'
             : `⚠️ ${response.message}`,
           response.otpSent ? 'success' : 'warning',
           5000
         );
       } else {
-        addToast(`❌ ${response.message}`, 'error');
+        showToast(`❌ ${response.message}`, 'error');
       }
     } catch (error) {
-      const message = error.response?.data?.message || 'Terjadi kesalahan';
-      addToast(`❌ ${message}`, 'error');
+      if (error.response?.status === 404) {
+        // 🆕 Specific error message for unregistered number
+        setRequestError('Nomor ini tidak terdaftar atau belum terdaftar silahkan lakukan register');
+      } else {
+        const message = error.response?.data?.message || 'Terjadi kesalahan';
+        showToast(`❌ ${message}`, 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -51,13 +58,13 @@ const ForgotPassword = () => {
 
       if (response.success) {
         setStep('reset');
-        addToast('✅ OTP berhasil diverifikasi', 'success');
+        showToast('✅ OTP berhasil diverifikasi', 'success');
       } else {
-        addToast(`❌ ${response.message}`, 'error');
+        showToast(`❌ ${response.message}`, 'error');
       }
     } catch (error) {
       const message = error.response?.data?.message || 'OTP tidak valid';
-      addToast(`❌ ${message}`, 'error');
+      showToast(`❌ ${message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -69,16 +76,16 @@ const ForgotPassword = () => {
       const response = await passwordService.resetPassword(phoneNumber, newPassword);
 
       if (response.success) {
-        addToast('🎉 Password berhasil diubah!', 'success', 4000);
+        showToast('🎉 Password berhasil diubah!', 'success', 4000);
         setTimeout(() => {
           navigate('/login');
         }, 1500);
       } else {
-        addToast(`❌ ${response.message}`, 'error');
+        showToast(`❌ ${response.message}`, 'error');
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Gagal reset password';
-      addToast(`❌ ${message}`, 'error');
+      showToast(`❌ ${message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -90,19 +97,19 @@ const ForgotPassword = () => {
       const response = await passwordService.resendResetOTP(phoneNumber);
 
       if (response.success) {
-        addToast(
-          response.otpSent 
+        showToast(
+          response.otpSent
             ? '✅ Kode OTP baru telah dikirim'
             : `⚠️ ${response.message}`,
           response.otpSent ? 'success' : 'warning',
           5000
         );
       } else {
-        addToast(`❌ ${response.message}`, 'error');
+        showToast(`❌ ${response.message}`, 'error');
       }
     } catch (error) {
       const message = error.response?.data?.message || 'Gagal mengirim ulang OTP';
-      addToast(`❌ ${message}`, 'error');
+      showToast(`❌ ${message}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -132,6 +139,7 @@ const ForgotPassword = () => {
           onVerifyOTP={handleVerifyOTP}
           onResetPassword={handleResetPassword}
           onResendOTP={handleResendOTP}
+          serverError={requestError} // 🆕 Pass error prop
         />
 
         <div className="auth-footer">

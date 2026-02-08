@@ -9,14 +9,15 @@ import Button from '../common/Button';
 import PhoneInput from '../common/PhoneInput';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-const ForgotPasswordForm = ({ 
-  step, 
-  loading, 
+const ForgotPasswordForm = ({
+  step,
+  loading,
   phoneNumber,
-  onRequestOTP, 
-  onVerifyOTP, 
+  onRequestOTP,
+  onVerifyOTP,
   onResetPassword,
-  onResendOTP 
+  onResendOTP,
+  serverError // 🆕 External error prop
 }) => {
   const [formData, setFormData] = useState({
     phone: '',
@@ -107,6 +108,12 @@ const ForgotPasswordForm = ({
               <span className="error-message">
                 <AlertCircle size={14} /> {errors.phone}
               </span>
+            )}
+            {serverError && ( // 🆕 Show server error (Fixed position)
+              <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-sm flex items-start gap-2">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{serverError}</span>
+              </div>
             )}
             <p className="text-muted text-sm mt-2">
               Masukkan nomor WhatsApp yang terdaftar pada akun Anda
@@ -205,9 +212,9 @@ const ForgotPasswordForm = ({
             {formData.newPassword && (
               <div className="password-strength">
                 <div className="strength-bar">
-                  <div 
-                    className="strength-fill" 
-                    style={{ 
+                  <div
+                    className="strength-fill"
+                    style={{
                       width: `${passwordStrength.level}%`,
                       backgroundColor: passwordStrength.color
                     }}

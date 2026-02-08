@@ -76,10 +76,14 @@ const VerifyOTPPage = () => {
       await verifyOTP(email, inputOtp);
       showToast('✅ Verifikasi berhasil! Silakan login.', 'success', 3000);
 
-      if (location.state?.trialPackage) {
+      if (location.state?.trialStatus === 'granted' && location.state?.trialPackage) {
         const { packageName, durationDays } = location.state.trialPackage;
         setTimeout(() => {
           showToast(`🎉 Trial berhasil diaktifkan: ${packageName} (${durationDays} hari)`, 'success', 5000);
+        }, 500);
+      } else if (location.state?.trialStatus === 'denied') {
+        setTimeout(() => {
+          showToast(`⚠️ Free Trial TIDAK DIAKTIFKAN karena akun Anda pernah dihapus sebelumnya.`, 'warning', 6000);
         }, 500);
       }
 

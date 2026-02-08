@@ -17,7 +17,7 @@ import '../../styles/Style_forWebsite/Payment.css';
 
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const packageId = searchParams.get('packageId');
 
@@ -275,6 +275,7 @@ const PaymentPage = () => {
               onSubmit={handlePaymentSubmit}
               loading={loading}
               selectedMethod={selectedMethod}
+              user={isAuthenticated ? user : null} // Pass user data
             />
           </motion.div>
 

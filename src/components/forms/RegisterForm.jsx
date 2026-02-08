@@ -25,7 +25,7 @@ const RegisterForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ level: 0, text: '', color: '' });
   const [focusedField, setFocusedField] = useState('');
-  
+
   const { register } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const RegisterForm = () => {
 
     // Validate form
     const validationErrors = validateForm(formData, ['name', 'email', 'phone', 'password']);
-    
+
     // Additional phone validation
     if (!validatePhone(formData.phone)) {
       validationErrors.phone = 'Format nomor WhatsApp tidak valid. Gunakan format: 08xxx atau +628xxx';
@@ -68,7 +68,7 @@ const RegisterForm = () => {
     // Check if there are errors
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      
+
       // Show first error as toast
       const firstError = Object.values(validationErrors)[0];
       showToast(firstError, 'error');
@@ -78,12 +78,12 @@ const RegisterForm = () => {
     setLoading(true);
     try {
       const response = await register(
-        formData.name, 
-        formData.email, 
-        formData.phone, 
+        formData.name,
+        formData.email,
+        formData.phone,
         formData.password
       );
-      
+
       // Success
       const { trialPackage } = response;
 
@@ -97,24 +97,25 @@ const RegisterForm = () => {
         showToast('🎉 Registrasi berhasil! Silakan verifikasi OTP!', 'success', 4000);
       }
 
-      
+
       // 🔥 PASS OTP KE HALAMAN VERIFY-OTP
       setTimeout(() => {
-        navigate('/verify-otp', { 
-          state: { 
+        navigate('/verify-otp', {
+          state: {
             email: formData.email,
             otp: response.otp,
             otpExpiry: response.otpExpiry,
             otpDuration: response.otpDuration || 30,
             userName: formData.name,
-            trialPackage: response.trialPackage // 🔥 Tambahkan ini
-          } 
+            trialPackage: response.trialPackage,
+            trialStatus: response.trialStatus // 🔥 Pass trial status
+          }
         });
       }, 500);
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       showToast(errorMessage, 'error');
-      
+
       // Handle specific errors
       if (errorMessage.includes('Email')) {
         setErrors({ email: errorMessage });
@@ -232,14 +233,14 @@ const RegisterForm = () => {
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
-        
+
         {/* Password Strength Indicator */}
         {formData.password && (
           <div className="password-strength">
             <div className="strength-bar">
-              <div 
-                className="strength-fill" 
-                style={{ 
+              <div
+                className="strength-fill"
+                style={{
                   width: `${passwordStrength.level}%`,
                   backgroundColor: passwordStrength.color,
                   transition: 'all 0.3s ease'
@@ -251,7 +252,7 @@ const RegisterForm = () => {
             </span>
           </div>
         )}
-        
+
         {errors.password && (
           <span className="error-message">
             <XCircle size={14} /> {errors.password}
@@ -284,7 +285,7 @@ const RegisterForm = () => {
             {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
         </div>
-        
+
         {/* Password Match Indicator */}
         {formData.confirmPassword && (
           <div className="password-match">
@@ -299,7 +300,7 @@ const RegisterForm = () => {
             )}
           </div>
         )}
-        
+
         {errors.confirmPassword && (
           <span className="error-message">
             <XCircle size={14} /> {errors.confirmPassword}
