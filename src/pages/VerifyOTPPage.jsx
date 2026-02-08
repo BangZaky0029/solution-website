@@ -1,11 +1,12 @@
-// VerifyOTPPage - Clean production version
+// VerifyOTPPage - WhatsApp OTP Only Version
+// OTP is sent via WhatsApp, so we don't display the code in UI
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import Button from '../components/common/Button';
-import { CheckCircle, Copy, Clock, AlertCircle, Shield } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, MessageCircle } from 'lucide-react';
 import '../styles/VerifyOTP.css';
 
 const VerifyOTPPage = () => {
@@ -14,13 +15,11 @@ const VerifyOTPPage = () => {
   const { verifyOTP, resendOTP } = useAuth();
   const { showToast } = useToast();
 
-  const { email, otp: initialOtp, otpDuration = 30, userName } = location.state || {};
+  const { email, otpDuration = 300, userName, phone } = location.state || {};
 
-  const [otp, setOtp] = useState(initialOtp || '');
   const [inputOtp, setInputOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(otpDuration);
   const [isExpired, setIsExpired] = useState(false);
 
@@ -51,18 +50,6 @@ const VerifyOTPPage = () => {
 
     return () => clearInterval(timer);
   }, [timeLeft]);
-
-  // Copy OTP to clipboard
-  const handleCopyOTP = async () => {
-    try {
-      await navigator.clipboard.writeText(otp);
-      setCopied(true);
-      showToast('✅ OTP berhasil disalin!', 'success');
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      showToast('Gagal menyalin OTP', 'error');
-    }
-  };
 
   // Handle Verify OTP
   const handleVerify = async (e) => {
@@ -114,13 +101,15 @@ const VerifyOTPPage = () => {
 
     try {
       const response = await resendOTP(email);
-
-      setOtp(response.otp);
       setInputOtp('');
-      setTimeLeft(response.otpDuration || 30);
+      setTimeLeft(response.otpDuration || 300);
       setIsExpired(false);
 
-      showToast('🎉 OTP baru telah dibuat!', 'success');
+      if (response.otpSent) {
+        showToast('📱 OTP baru telah dikirim ke WhatsApp Anda!', 'success');
+      } else {
+        showToast('🎉 OTP baru telah dibuat! Cek WhatsApp Anda.', 'success');
+      }
     } catch (error) {
       const message = error.response?.data?.message || 'Gagal mengirim OTP';
       showToast(message, 'error');
@@ -129,90 +118,51 @@ const VerifyOTPPage = () => {
     }
   };
 
-  const formatTime = (seconds) => `${seconds}s`;
-
-  // Fallback if no OTP from backend
-  if (!otp && email) {
-    return (
-      <div className="auth-container">
-        <div className="auth-card">
-          <div className="auth-header">
-            <Shield size={48} color="#ef4444" />
-            <h1>OTP Tidak Ditemukan</h1>
-            <p className="text-muted">
-              Sepertinya ada masalah saat mendapatkan OTP dari server.
-            </p>
-          </div>
-
-          <div className="alert alert-warning">
-            <AlertCircle size={20} />
-            <div>
-              <strong>Info:</strong>
-              <p>Email: {email || 'Tidak ada'}</p>
-            </div>
-          </div>
-
-          <button onClick={handleResend} className="btn-primary" disabled={resending}>
-            {resending ? 'Mengirim...' : 'Minta OTP Baru'}
-          </button>
-
-          <div className="auth-footer">
-            <Link to="/register" className="auth-link">← Kembali ke Registrasi</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Format time as mm:ss
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins > 0 ? `${mins}m ${secs}s` : `${seconds}s`;
+  };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="whatsapp-badge">
+            <MessageCircle size={32} />
+          </div>
           <h1>Verifikasi OTP</h1>
           <p className="text-muted">
-            Halo <strong>{userName || 'User'}</strong>, kode OTP Anda telah dibuat
+            Halo <strong>{userName || 'User'}</strong>!
           </p>
         </div>
 
-        {/* OTP Display Box */}
-        <div className="otp-display-box">
-          <div className="otp-header">
-            <Clock size={20} />
-            <span>Kode OTP Anda</span>
+        {/* WhatsApp Info Box */}
+        <div className="otp-info-box">
+          <div className="info-icon">
+            <CheckCircle size={24} color="#22c55e" />
           </div>
-
-          <div className="otp-code-container">
-            <div className={`otp-code ${isExpired ? 'expired' : ''}`}>
-              {otp || '******'}
-            </div>
-
-            {!isExpired && (
-              <button
-                onClick={handleCopyOTP}
-                className="copy-button"
-                disabled={!otp}
-              >
-                {copied ? <CheckCircle size={20} /> : <Copy size={20} />}
-                {copied ? 'Disalin!' : 'Salin'}
-              </button>
-            )}
+          <div className="info-content">
+            <p className="info-title">Kode OTP telah dikirim ke WhatsApp</p>
+            <p className="info-phone">{phone || 'Nomor WhatsApp terdaftar'}</p>
           </div>
-
-          {/* Timer */}
-          <div className={`otp-timer ${isExpired ? 'expired' : ''}`}>
-            <Clock size={16} />
-            <span>
-              {isExpired ? 'OTP Kadaluarsa' : `Berlaku ${formatTime(timeLeft)}`}
-            </span>
-          </div>
-
-          {isExpired && (
-            <div className="otp-expired-alert">
-              <AlertCircle size={16} />
-              <span>OTP telah kadaluarsa. Silakan minta OTP baru.</span>
-            </div>
-          )}
         </div>
+
+        {/* Timer */}
+        <div className={`otp-timer-box ${isExpired ? 'expired' : ''}`}>
+          <Clock size={18} />
+          <span>
+            {isExpired ? 'OTP Kadaluarsa' : `Berlaku ${formatTime(timeLeft)}`}
+          </span>
+        </div>
+
+        {isExpired && (
+          <div className="otp-expired-alert">
+            <AlertCircle size={16} />
+            <span>OTP telah kadaluarsa. Silakan minta OTP baru.</span>
+          </div>
+        )}
 
         {/* Verification Form */}
         <form onSubmit={handleVerify} className="auth-form">
@@ -229,9 +179,10 @@ const VerifyOTPPage = () => {
               disabled={loading || isExpired}
               className="otp-input"
               autoFocus
+              autoComplete="one-time-code"
             />
             <p className="text-muted text-xs mt-2">
-              Salin kode OTP di atas atau ketik manual
+              Cek pesan WhatsApp Anda untuk kode OTP
             </p>
           </div>
 
@@ -255,7 +206,7 @@ const VerifyOTPPage = () => {
             className="resend-button"
             disabled={resending}
           >
-            {resending ? 'Mengirim...' : 'Minta OTP Baru'}
+            {resending ? 'Mengirim...' : 'Kirim Ulang OTP'}
           </button>
         </div>
 

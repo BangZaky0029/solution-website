@@ -24,8 +24,9 @@ import {
   Mail, Phone, Package, CreditCard,
   HelpCircle, ArrowRight, Download, Calendar,
   Clock, ShieldCheck, ExternalLink,
-  AlertCircle, MessageCircle
+  AlertCircle, MessageCircle, KeyRound
 } from 'lucide-react';
+import ResetPasswordModal from './components/ResetPasswordModal';
 
 const Profile = () => {
   const { user, isAuthenticated } = useAuth();
@@ -38,6 +39,7 @@ const Profile = () => {
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [downloadingId, setDownloadingId] = useState(null);
   const [notification, setNotification] = useState(null);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login');
@@ -278,7 +280,15 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-            <div className="profile-header-cta">
+            <div className="profile-header-cta" style={{ display: 'flex', gap: '10px' }}>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowResetModal(true)}
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-sm"
+              >
+                <KeyRound size={20} /> Reset Password
+              </Button>
               <Button variant="primary" size="lg" className="pulse-btn" onClick={() => navigate('/pricing')}>
                 <ShieldCheck size={20} /> Upgrade Premium
               </Button>
@@ -433,7 +443,17 @@ const Profile = () => {
 
         </div>
       </section>
-    </div>
+
+
+      {/* MODALS */}
+      <ResetPasswordModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        userPhone={user?.phone}
+        user={user}
+      />
+
+    </div >
   );
 };
 
