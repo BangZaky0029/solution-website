@@ -192,7 +192,12 @@ const LoginForm = () => {
         <button
           type="button"
           className="google-btn"
-          onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}
+          onClick={() => {
+            const apiUrl = import.meta.env.VITE_API_URL || 
+                           import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 
+                           'https://api.nuansasolution.id';
+            window.location.href = `${apiUrl}/auth/google`;
+          }}
           disabled={loading}
         >
           <div className="google-icon-wrapper">
