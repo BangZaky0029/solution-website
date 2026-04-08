@@ -80,8 +80,7 @@ const Header = () => {
               </div>
             ) : (
               <div className="header-auth-buttons">
-                <Link to="/login" className="btn btn-outline btn-sm">Login</Link>
-                <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
+                <Link to="/login" className="btn btn-primary btn-sm">Login / Register</Link>
               </div>
             )}
           </div>

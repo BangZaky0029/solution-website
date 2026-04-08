@@ -79,6 +79,17 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
+      {/* Trial Info Banner (Gift for new users) */}
+      <div className="trial-banner" style={{ marginBottom: '20px' }}>
+        <div className="trial-content">
+          <span className="trial-icon">🎁</span>
+          <div>
+            <p className="trial-title">Trial Gratis 3 Hari!</p>
+            <p className="trial-subtitle">Khusus pengguna baru, akses full semua fitur.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Welcome Banner */}
       <div className="welcome-banner">
         <h3>Selamat Datang Kembali! 👋</h3>
@@ -177,9 +188,22 @@ const LoginForm = () => {
         <span>atau</span>
       </div>
 
-      <div className="auth-footer">
-        <p>Belum punya akun?</p>
-        <Link to="/register" className="auth-link">Daftar sekarang</Link>
+      <div className="social-auth">
+        <button
+          type="button"
+          className="google-btn"
+          onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}
+          disabled={loading}
+        >
+          <div className="google-icon-wrapper">
+            <img 
+              className="google-icon" 
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+              alt="Google" 
+            />
+          </div>
+          <span className="btn-text">Lanjutkan dengan Google</span>
+        </button>
       </div>
     </form>
   );

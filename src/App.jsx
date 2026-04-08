@@ -19,6 +19,7 @@ import Register from './pages/Auth/Register';
 import VerifyOTPPage from './pages/VerifyOTPPage';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import Profile from './pages/Profile/Profile';
+import GoogleSuccess from './pages/Auth/GoogleSuccess';
 import PaymentPage from './pages/Payment/PaymentPage';
 import PaymentConfirmation from './pages/Payment/PaymentConfirmation';
 import FeaturesPage from './pages/Features/FeaturesPage';
@@ -47,10 +48,11 @@ function App() {
         {/* ================= AUTH (NO HEADER / FOOTER) ================= */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Login />} />
           {/* 🔥 GANTI DENGAN COMPONENT BARU */}
           <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/auth/google/success" element={<GoogleSuccess />} />
         </Route>
 
         {/* ================= MAIN (WITH HEADER / FOOTER) ================= */}

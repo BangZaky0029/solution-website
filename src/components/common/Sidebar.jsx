@@ -79,13 +79,7 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
                 className="btn btn-primary sidebar-auth-btn"
                 onClick={() => handleNavClick('/login')}
               >
-                Login
-              </button>
-              <button
-                className="btn btn-outline sidebar-auth-btn"
-                onClick={() => handleNavClick('/register')}
-              >
-                Register
+                Login / Register
               </button>
             </div>
           )}
