@@ -65,8 +65,12 @@ const Sidebar = ({ isOpen, onClose, showLandingMenu }) => {
               onClick={() => handleNavClick('/profile')}
               style={{ cursor: 'pointer' }}
             >
-              <div className="sidebar-user-avatar">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              <div className="sidebar-user-avatar overflow-hidden">
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0).toUpperCase() || 'U'
+                )}
               </div>
               <div className="sidebar-user-info">
                 <p className="sidebar-user-name">{user?.name}</p>

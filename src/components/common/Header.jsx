@@ -62,8 +62,12 @@ const Header = () => {
             {isAuthenticated() ? (
               <div className="header-user-menu">
                 <Link to="/profile" className="header-user-link">
-                  <div className="header-user-avatar">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                  <div className="header-user-avatar overflow-hidden">
+                    {user?.avatar_url ? (
+                      <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      user?.name?.charAt(0).toUpperCase() || 'U'
+                    )}
                   </div>
                   <span className="header-user-name">
                     {user?.name || 'User'}

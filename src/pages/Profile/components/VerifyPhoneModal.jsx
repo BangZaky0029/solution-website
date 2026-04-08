@@ -88,7 +88,7 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
           </button>
         </div>
 
-        <div className="p-8">
+        <div className="p-8 md:p-10">
           <AnimatePresence mode="wait">
             {step === 1 ? (
               <motion.div

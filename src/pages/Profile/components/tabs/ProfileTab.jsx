@@ -57,14 +57,24 @@ const ProfileTab = ({ user, setShowResetModal, setShowDeleteModal, setShowVerify
             </div>
 
             {/* 2. KEAMANAN */}
-            <div className="bg-white rounded-3xl border border-gray-100 p-6 mb-6 shadow-sm relative overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 mb-6 shadow-sm relative overflow-hidden group">
                 {!isVerified && (
-                  <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center p-6">
-                    <div className="text-center bg-white shadow-xl border border-gray-100 p-6 rounded-3xl max-w-xs animate-bounce-subtle">
-                      <ShieldCheck size={32} className="mx-auto text-blue-500 mb-2" />
-                      <p className="text-sm font-bold text-gray-900 mb-1">Fitur Keamanan Terkunci</p>
-                      <p className="text-xs text-gray-500 mb-4">Verifikasi WhatsApp Anda untuk mengakses Reset Password dan Penghapusan Akun.</p>
-                      <Button size="sm" onClick={() => setShowVerifyModal(true)} className="w-full text-xs py-2">Verifikasi Sekarang</Button>
+                  <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-10 flex items-center justify-center p-4 transition-all duration-300">
+                    <div className="text-center bg-white/95 shadow-2xl border border-blue-50 p-6 md:p-8 rounded-[32px] max-w-[280px] md:max-w-xs transform transition-transform group-hover:scale-[1.02]">
+                      <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600 shadow-sm border border-blue-100">
+                        <ShieldCheck size={32} />
+                      </div>
+                      <h5 className="text-base font-bold text-gray-900 mb-2">Fitur Keamanan Terkunci</h5>
+                      <p className="text-xs text-gray-500 mb-6 leading-relaxed">
+                        Verifikasi WhatsApp Anda untuk membuka akses **Reset Password** dan **Penghapusan Akun**.
+                      </p>
+                      <Button 
+                        size="sm" 
+                        onClick={() => setShowVerifyModal(true)} 
+                        className="w-full py-3 text-xs font-bold rounded-xl shadow-lg shadow-blue-100"
+                      >
+                        Verifikasi Sekarang
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -94,25 +104,25 @@ const ProfileTab = ({ user, setShowResetModal, setShowDeleteModal, setShowVerify
             </div>
 
             {/* 3. DANGER ZONE */}
-            <div className="bg-red-50/50 rounded-3xl border border-red-100 p-6 relative overflow-hidden">
-                {!isVerified && <div className="absolute inset-0 bg-gray-50/40 backdrop-blur-[1px] z-10"></div>}
+            <div className="bg-red-50/30 rounded-[32px] border border-red-100 p-6 md:p-8 relative overflow-hidden group">
+                {!isVerified && <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px] z-10"></div>}
                 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
                     <div className="flex gap-4">
-                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0">
-                            <Trash2 size={20} />
+                        <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0 shadow-sm">
+                            <Trash2 size={24} />
                         </div>
                         <div>
-                            <h3 className="text-red-700 font-bold mb-1">Hapus Akun</h3>
-                            <p className="text-sm text-red-600/80 leading-relaxed">
-                                Tindakan ini permanen dan tidak dapat dibatalkan.
+                            <h3 className="text-red-700 font-bold mb-1 text-base">Hapus Akun</h3>
+                            <p className="text-xs text-red-600/70 leading-relaxed max-w-sm">
+                                Tindakan ini bersifat permanen. Seluruh data, histori, dan paket aktif Anda akan dihapus selamanya.
                             </p>
                         </div>
                     </div>
                     <Button
                         variant="danger"
                         onClick={() => isVerified && setShowDeleteModal(true)}
-                        className={`w-full md:w-auto hover:bg-red-600 hover:text-white transition-all shadow-sm rounded-xl px-6 ${!isVerified ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full md:w-auto hover:bg-red-600 hover:text-white transition-all shadow-md rounded-xl px-8 font-bold text-sm ${!isVerified ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         Hapus Akun
                     </Button>

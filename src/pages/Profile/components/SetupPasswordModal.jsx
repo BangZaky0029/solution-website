@@ -82,7 +82,7 @@ const SetupPasswordModal = ({ isOpen, onClose }) => {
                         </button>
                     </div>
 
-                    <div className="p-8">
+                    <div className="p-8 md:p-10">
                         {step === 1 ? (
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <p className="text-sm text-gray-500 text-center mb-4">
