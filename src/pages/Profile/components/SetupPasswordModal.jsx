@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Lock, ShieldCheck, CheckCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
-import Button from '../../../../components/common/Button';
+import Button from '../../../components/common/Button';
 
 const SetupPasswordModal = ({ isOpen, onClose }) => {
     const { setupPassword } = useAuth();

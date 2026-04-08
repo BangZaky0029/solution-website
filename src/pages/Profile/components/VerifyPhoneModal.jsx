@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Phone, MessageSquare, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '../../../hooks/useToast';
-import Button from '../../../../components/common/Button';
+import Button from '../../../components/common/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
