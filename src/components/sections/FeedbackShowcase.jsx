@@ -249,8 +249,21 @@ const FeedbackShowcase = () => {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-black text-lg">
-                          {item.user_name?.charAt(0).toUpperCase()}
+                        <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-black text-lg overflow-hidden border-2 border-indigo-100 shadow-sm">
+                          {item.avatar_url ? (
+                            <img 
+                              src={item.avatar_url} 
+                              alt={item.user_name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback if image fails to load
+                                e.target.style.display = 'none';
+                                e.target.parentElement.innerHTML = item.user_name?.charAt(0).toUpperCase();
+                              }}
+                            />
+                          ) : (
+                            item.user_name?.charAt(0).toUpperCase()
+                          )}
                         </div>
                         <div>
                           <h4 className="font-bold text-gray-900">{item.user_name}</h4>
