@@ -8,7 +8,7 @@ const GoogleSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { checkAuth } = useAuth();
+  const { getCurrentUser } = useAuth();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -18,7 +18,7 @@ const GoogleSuccess = () => {
       localStorage.setItem('token', token);
       
       // Update auth state
-      checkAuth();
+      getCurrentUser();
 
       showToast('✅ Login Google Berhasil!', 'success');
 
@@ -30,7 +30,7 @@ const GoogleSuccess = () => {
       showToast('❌ Login Google Gagal: Token tidak ditemukan', 'error');
       navigate('/login', { replace: true });
     }
-  }, [searchParams, navigate, showToast, checkAuth]);
+  }, [searchParams, navigate, showToast, getCurrentUser]);
 
   return (
     <div className="auth-container">
