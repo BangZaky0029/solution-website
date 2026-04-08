@@ -3,6 +3,8 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+import SurveyInterceptor from './surveys/SurveyInterceptor';
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -23,7 +25,8 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <SurveyInterceptor>{children}</SurveyInterceptor>;
 };
+
 
 export default ProtectedRoute;

@@ -205,13 +205,30 @@ const VerifyOTPPage = () => {
         {/* Resend OTP */}
         <div className="resend-section">
           <p>Tidak menerima OTP atau sudah kadaluarsa?</p>
-          <button
-            onClick={handleResend}
-            className="resend-button"
-            disabled={resending}
-          >
-            {resending ? 'Mengirim...' : 'Kirim Ulang OTP'}
-          </button>
+          <div className="flex flex-col gap-3 mt-4">
+            <button
+              onClick={handleResend}
+              className="resend-button"
+              disabled={resending}
+            >
+              {resending ? 'Mengirim...' : 'Kirim Ulang OTP'}
+            </button>
+
+            <div className="pt-4 border-t border-gray-100 mt-2">
+              <p className="text-xs text-gray-500 mb-2">Masih ada kendala? Hubungi Admin kami</p>
+              <a 
+                href={`https://wa.me/6281995770190?text=${encodeURIComponent(
+                  `hallo kak otp saya tak kunjung terkirim mohon d bantu, berikut data user saya\n- Username: ${userName || 'User'}\n- Phone: ${phone || 'N/A'}`
+                )}`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="support-wa-button"
+              >
+                <MessageCircle size={16} />
+                Hubungi Support (Manual OTP)
+              </a>
+            </div>
+          </div>
         </div>
 
         <div className="auth-footer">

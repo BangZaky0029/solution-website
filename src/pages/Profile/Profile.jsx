@@ -13,7 +13,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import api from '../../services/api';
 import '../../styles/Style_forWebsite/Profile.css';
 import {
-  User, Package, ShieldCheck, CreditCard, Menu, X, Mail, Phone
+  User, Package, ShieldCheck, CreditCard, Menu, X, Mail, Phone, MessageSquare, HelpCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -22,10 +22,14 @@ import ProfileTab from './components/tabs/ProfileTab';
 import SubscriptionTab from './components/tabs/SubscriptionTab';
 import LauncherTab from './components/tabs/LauncherTab';
 import HistoryTab from './components/tabs/HistoryTab';
+import FeedbackTab from './components/tabs/FeedbackTab';
+
 
 // Import Modals (still needed at top level for state uplifting if desired, or passed down)
 import ResetPasswordModal from './components/ResetPasswordModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
+import AcquisitionModal from '../../components/surveys/AcquisitionModal';
+import surveyService from '../../services/surveyService';
 
 const Profile = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -42,6 +46,8 @@ const Profile = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAcqModal, setShowAcqModal] = useState(false);
+  const [hasAcquisition, setHasAcquisition] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated) navigate('/login');
@@ -62,6 +68,20 @@ const Profile = () => {
       }
     };
     if (isAuthenticated) fetchPayments();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const checkSurvey = async () => {
+      try {
+        const res = await surveyService.getSurveyStatus();
+        if (res.success) {
+          setHasAcquisition(res.data.hasFilledAcquisition);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (isAuthenticated) checkSurvey();
   }, [isAuthenticated]);
 
   const showToast = (message, type = 'success') => {
@@ -152,7 +172,9 @@ const Profile = () => {
     { id: 'subscription', label: 'Paket Aktif', icon: <Package size={18} /> },
     { id: 'launcher', label: 'Launcher', icon: <ShieldCheck size={18} /> },
     { id: 'history', label: 'Riwayat', icon: <CreditCard size={18} /> },
+    { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={18} /> },
   ];
+
 
   if (tokensLoading || loadingPayments) return <LoadingSpinner />;
 
@@ -210,6 +232,16 @@ const Profile = () => {
                     className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-2xl font-semibold shadow-blue-200 shadow-lg hover:shadow-xl hover:bg-blue-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                   >
                     Upgrade Premium
+                  </button>
+                )}
+
+
+                {!hasAcquisition && (
+                  <button
+                    onClick={() => setShowAcqModal(true)}
+                    className="w-full md:w-auto px-6 py-3 bg-amber-100 text-amber-700 rounded-2xl font-bold shadow-sm hover:bg-amber-200 transition-all flex items-center justify-center gap-2"
+                  >
+                    <HelpCircle size={18} /> Sumber Informasi
                   </button>
                 )}
               </div>
@@ -303,6 +335,10 @@ const Profile = () => {
                   downloadingId={downloadingId}
                 />
               )}
+
+              {activeTab === 'feedback' && (
+                <FeedbackTab showToast={showToast} />
+              )}
             </div>
           </div>
 
@@ -322,6 +358,17 @@ const Profile = () => {
         onClose={() => setShowDeleteModal(false)}
         userPhone={user?.phone}
         onLogout={logout}
+      />
+
+      <AcquisitionModal
+        isOpen={showAcqModal}
+        onClose={() => setShowAcqModal(false)}
+        onSuccess={() => {
+          setHasAcquisition(true);
+          showToast('Terima kasih telah mengisi survey!');
+        }}
+        skipCount={0}
+        maxSkip={999} // Allow closing manually from profile any time
       />
 
     </div>

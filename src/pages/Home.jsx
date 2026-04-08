@@ -6,6 +6,7 @@
 import Hero from '../components/sections/Hero';
 import Features from '../components/sections/Features';
 import CTA from '../components/sections/CTA';
+import FeedbackShowcase from '../components/sections/FeedbackShowcase';
 
 const Home = () => {
   return (
@@ -13,8 +14,10 @@ const Home = () => {
       <Hero />
       <Features />
       <CTA />
+      <FeedbackShowcase />
     </div>
   );
 };
+
 
 export default Home;
