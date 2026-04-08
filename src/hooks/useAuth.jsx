@@ -71,6 +71,27 @@ export const AuthProvider = ({ children }) => {
     return response.user;
   };
 
+  const requestPhoneVerify = async (phone) => {
+    const response = await authController.requestPhoneVerify(phone);
+    return response;
+  };
+
+  const verifyPhoneOTP = async (phone, otp) => {
+    const response = await authController.verifyPhoneOTP(phone, otp);
+    if (response.success) {
+      await getCurrentUser(); // Refresh user state
+    }
+    return response;
+  };
+
+  const setupPassword = async (password) => {
+    const response = await authController.setupPassword(password);
+    if (response.success) {
+      await getCurrentUser(); // Refresh user state
+    }
+    return response;
+  };
+
   const value = {
     user,
     loading,
@@ -80,7 +101,10 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated,
-    getCurrentUser
+    getCurrentUser,
+    requestPhoneVerify,
+    verifyPhoneOTP,
+    setupPassword
   };
 
   return (

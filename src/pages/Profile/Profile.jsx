@@ -27,7 +27,9 @@ import FeedbackTab from './components/tabs/FeedbackTab';
 
 // Import Modals (still needed at top level for state uplifting if desired, or passed down)
 import ResetPasswordModal from './components/ResetPasswordModal';
+import SetupPasswordModal from './components/SetupPasswordModal';
 import DeleteAccountModal from './components/DeleteAccountModal';
+import VerifyPhoneModal from './components/VerifyPhoneModal';
 import AcquisitionModal from '../../components/surveys/AcquisitionModal';
 import surveyService from '../../services/surveyService';
 
@@ -44,7 +46,9 @@ const Profile = () => {
   const [downloadingId, setDownloadingId] = useState(null);
   const [notification, setNotification] = useState(null);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showSetupModal, setShowSetupModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAcqModal, setShowAcqModal] = useState(false);
   const [hasAcquisition, setHasAcquisition] = useState(true);
@@ -193,9 +197,17 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 border-4 border-white shadow-sm flex items-center justify-center text-3xl font-bold text-blue-600">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
-              </div>
+              {user?.avatar_url ? (
+                <img 
+                  src={user.avatar_url} 
+                  alt={user.name}
+                  className="w-24 h-24 rounded-full border-4 border-white shadow-sm object-cover"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 border-4 border-white shadow-sm flex items-center justify-center text-3xl font-bold text-blue-600">
+                  {user?.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              )}
               <div className="absolute bottom-1 right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
             </div>
 
@@ -218,14 +230,24 @@ const Profile = () => {
               </div>
 
               {/* Stacked Action Buttons */}
-              <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                {/* Check if user has active subscription */}
+              <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                {/* Subscription Badge */}
                 {userTokens && userTokens.some(t => t.is_active === 1) ? (
-                  <button
-                    className="w-full md:w-auto px-6 py-3 bg-green-100 text-green-700 rounded-2xl font-bold shadow-sm cursor-default flex items-center justify-center gap-2"
-                  >
-                    <ShieldCheck size={18} /> Subscriber
-                  </button>
+                  <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                    <button
+                      className="w-full md:w-auto px-6 py-3 bg-green-100 text-green-700 rounded-2xl font-bold shadow-sm cursor-default flex items-center justify-center gap-2"
+                    >
+                      <ShieldCheck size={18} /> Subscriber
+                    </button>
+                    
+                    {/* Trial Countdown */}
+                    {userTokens.find(t => t.is_active === 1 && t.is_trial === 1) && (
+                      <div className="px-4 py-3 bg-blue-50 text-blue-700 rounded-2xl text-xs font-bold border border-blue-100 flex items-center gap-2">
+                        <span className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></span>
+                        Trial: {Math.max(0, Math.ceil((new Date(userTokens.find(t => t.is_active === 1 && t.is_trial === 1).expired_at) - new Date()) / (1000 * 60 * 60 * 24)))} Hari Tersisa
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <button
                     onClick={() => navigate('/pricing')}
@@ -235,6 +257,13 @@ const Profile = () => {
                   </button>
                 )}
 
+                {/* WhatsApp Support Button */}
+                <button
+                  onClick={() => window.open('https://wa.me/6281995770190?text=Halo%20Admin%20Nuansa%20Solution%2C%20saya%20butuh%20bantuan%20terkait%20akun%20saya.', '_blank')}
+                  className="w-full md:w-auto px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl font-bold shadow-sm hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageSquare size={18} className="text-green-500" /> WhatsApp Support
+                </button>
 
                 {!hasAcquisition && (
                   <button
@@ -307,7 +336,9 @@ const Profile = () => {
                 <ProfileTab
                   user={user}
                   setShowResetModal={setShowResetModal}
+                  setShowSetupModal={setShowSetupModal}
                   setShowDeleteModal={setShowDeleteModal}
+                  setShowVerifyModal={setShowVerifyModal}
                   navigate={navigate}
                 />
               )}
@@ -337,7 +368,10 @@ const Profile = () => {
               )}
 
               {activeTab === 'feedback' && (
-                <FeedbackTab showToast={showToast} />
+                <FeedbackTab 
+                  user={user}
+                  showToast={showToast} 
+                />
               )}
             </div>
           </div>
@@ -353,11 +387,22 @@ const Profile = () => {
         user={user}
       />
 
+      <SetupPasswordModal
+        isOpen={showSetupModal}
+        onClose={() => setShowSetupModal(false)}
+      />
+
       <DeleteAccountModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         userPhone={user?.phone}
         onLogout={logout}
+      />
+
+      <VerifyPhoneModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        userPhone={user?.phone}
       />
 
       <AcquisitionModal

@@ -1,5 +1,5 @@
 // C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\pages\Auth\GoogleSuccess.jsx
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
@@ -9,11 +9,17 @@ const GoogleSuccess = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { getCurrentUser } = useAuth();
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Pastikan hanya diproses 1 kali
+    if (hasProcessed.current) return;
+
     const token = searchParams.get('token');
 
     if (token) {
+      hasProcessed.current = true;
+      
       // Store token
       localStorage.setItem('token', token);
       
@@ -25,9 +31,10 @@ const GoogleSuccess = () => {
       // Redirect to profile
       setTimeout(() => {
         navigate('/profile', { replace: true });
-      }, 1000);
-    } else {
-      showToast('❌ Login Google Gagal: Token tidak ditemukan', 'error');
+      }, 800);
+    } else if (searchParams.has('error')) {
+      hasProcessed.current = true;
+      showToast('❌ Login Google Gagal', 'error');
       navigate('/login', { replace: true });
     }
   }, [searchParams, navigate, showToast, getCurrentUser]);

@@ -1,5 +1,5 @@
 // C:\codingVibes\nuansasolution\.mainweb\payments\solution-website\src\controllers\authController.js
-// Updated with OTP handling
+// Updated with OTP handling and Google security features
 
 import api from '../services/api';
 
@@ -60,6 +60,30 @@ export const authController = {
    */
   me: async () => {
     const res = await api.get('/auth/me');
+    return res.data;
+  },
+
+  /**
+   * Request Phone Verification OTP
+   */
+  requestPhoneVerify: async (phone) => {
+    const res = await api.post('/auth/request-phone-verify', { phone });
+    return res.data;
+  },
+
+  /**
+   * Verify Phone OTP
+   */
+  verifyPhoneOTP: async (phone, otp) => {
+    const res = await api.post('/auth/verify-phone-otp', { phone, otp });
+    return res.data;
+  },
+
+  /**
+   * Setup Password (Google Users)
+   */
+  setupPassword: async (password) => {
+    const res = await api.post('/auth/setup-password', { password });
     return res.data;
   }
 };

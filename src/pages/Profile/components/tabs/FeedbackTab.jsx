@@ -8,7 +8,7 @@ import { Star, Send, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import surveyService from '../../../../services/surveyService';
 
-const FeedbackTab = ({ showToast }) => {
+const FeedbackTab = ({ user, showToast }) => {
   const [status, setStatus] = useState(null);
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -96,6 +96,17 @@ const FeedbackTab = ({ showToast }) => {
         ) : (
           <>
             <div className="text-center mb-8 relative">
+              {/* Avatar Center */}
+              <div className="flex justify-center mb-4">
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} className="w-16 h-16 rounded-full border-2 border-white shadow-sm" alt={user.name} />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-600 border-2 border-white shadow-sm">
+                    {user?.name?.charAt(0)}
+                  </div>
+                )}
+              </div>
+              
               <div className="absolute top-0 right-0 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-lg ring-1 ring-blue-100">
                 Sisa Batas: {status?.feedbackCount || 0} / 3
               </div>
