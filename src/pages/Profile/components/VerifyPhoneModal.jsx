@@ -14,6 +14,7 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (countdown > 0) {
@@ -27,6 +28,7 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
     if (!phone) return showToast('Nomor WhatsApp diperlukan', 'error');
 
     setLoading(true);
+    setError('');
     try {
       const res = await requestPhoneVerify(phone);
       if (res.success) {
@@ -34,9 +36,11 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
         setStep(2);
         setCountdown(90);
       } else {
+        setError(res.message || 'Gagal mengirim OTP');
         showToast(res.message || 'Gagal mengirim OTP', 'error');
       }
     } catch (err) {
+      setError('Terjadi kesalahan saat mengirim OTP');
       showToast('Terjadi kesalahan saat mengirim OTP', 'error');
     } finally {
       setLoading(false);
@@ -48,15 +52,18 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
     if (!otp || otp.length < 6) return showToast('Masukkan 6 digit kode OTP', 'error');
 
     setLoading(true);
+    setError('');
     try {
       const res = await verifyPhoneOTP(phone, otp);
       if (res.success) {
         showToast('🎉 WhatsApp berhasil diverifikasi!', 'success');
         onClose();
       } else {
+        setError(res.message || 'OTP tidak valid');
         showToast(res.message || 'OTP tidak valid', 'error');
       }
     } catch (err) {
+      setError('Gagal memverifikasi OTP');
       showToast('Gagal memverifikasi OTP', 'error');
     } finally {
       setLoading(false);
@@ -120,6 +127,13 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
                       />
                     </div>
                   </div>
+
+                  {error && (
+                    <div className="p-4 bg-red-50 text-red-600 text-xs rounded-2xl border border-red-100 flex items-start gap-3 my-4">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <p className="font-medium leading-relaxed">{error}</p>
+                    </div>
+                  )}
 
                   <Button 
                     type="submit" 
