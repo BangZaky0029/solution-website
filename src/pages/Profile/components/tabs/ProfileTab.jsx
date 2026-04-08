@@ -2,7 +2,7 @@ import { Mail, Phone, KeyRound, ShieldCheck, Trash2, Edit2, AlertCircle, CheckCi
 import Button from '../../../../components/common/Button';
 import { useToast } from '../../../../hooks/useToast';
 
-const ProfileTab = ({ user, setShowResetModal, setShowDeleteModal, setShowVerifyModal, navigate }) => {
+const ProfileTab = ({ user, setShowResetModal, setShowSetupModal, setShowDeleteModal, setShowVerifyModal, navigate }) => {
     const { showToast } = useToast();
 
     const handleComingSoon = () => {
