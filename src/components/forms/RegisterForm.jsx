@@ -107,11 +107,13 @@ const RegisterForm = () => {
             otpExpiry: response.otpExpiry,
             otpDuration: response.otpDuration || 30,
             userName: formData.name,
+            phone: formData.phone,
             trialPackage: response.trialPackage,
             trialStatus: response.trialStatus // 🔥 Pass trial status
           }
         });
       }, 500);
+
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       showToast(errorMessage, 'error');

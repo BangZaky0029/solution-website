@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Star, MessageCircle, Filter, ChevronDown, User } from 'lucide-react';
+import { Star, MessageCircle, Filter, ChevronDown, User, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api from '../../services/api'; // Adjust path if needed
+import api from '../../services/api'; 
+import surveyService from '../../services/surveyService';
+import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
+
 
 const FeedbackShowcase = () => {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterRating, setFilterRating] = useState(null);
-
-  useEffect(() => {
-    fetchFeedbacks();
-  }, []);
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  // New Feedback Form State
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+
+
+    fetchFeedbacks();
+  }, []);
+
   const fetchFeedbacks = async () => {
+
     try {
       const response = await api.get('/surveys/public/list');
       if (response.data.success) {
@@ -27,6 +44,33 @@ const FeedbackShowcase = () => {
       setLoading(false);
     }
   };
+
+  const handleSubmitFeedback = async () => {
+    if (rating === 0) {
+      showToast('Silakan pilih rating bintang', 'error');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await surveyService.submitFeedback(rating, comment);
+      showToast('Terima kasih! Ulasan Anda telah terkirim.', 'success');
+      
+      // Reset form
+      setRating(0);
+      setComment('');
+      setIsFormOpen(false);
+      
+      // Refresh list
+      fetchFeedbacks();
+    } catch (error) {
+      const message = error.response?.data?.message || 'Gagal mengirim ulasan';
+      showToast(message, 'error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
 
   const stats = {
     average: feedbacks.length > 0 
@@ -97,10 +141,81 @@ const FeedbackShowcase = () => {
                   </div>
                 ))}
               </div>
+
+              {/* [NEW] Write Review Button & Form */}
+              <div className="mt-10 pt-8 border-t border-gray-100">
+                {!isFormOpen ? (
+                  <button 
+                    onClick={() => {
+                      if (!user) {
+                        showToast('Silakan login untuk memberikan ulasan', 'info');
+                        return;
+                      }
+                      setIsFormOpen(true);
+                    }}
+                    className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200"
+                  >
+                    <Star size={18} className="fill-yellow-400 text-yellow-400" />
+                    Tulis Ulasan Sekarang
+                  </button>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="bg-white rounded-2xl p-6 border-2 border-indigo-100 shadow-lg"
+                  >
+                    <div className="flex justify-between items-center mb-6">
+                      <h4 className="font-black text-gray-900 tracking-tight">Berikan Rating Anda</h4>
+                      <button onClick={() => setIsFormOpen(false)} className="text-gray-400 hover:text-red-500">✕</button>
+                    </div>
+
+                    {/* Interactive Stars */}
+                    <div className="flex justify-center gap-3 mb-8">
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <button
+                          key={s}
+                          onMouseEnter={() => setHoverRating(s)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          onClick={() => setRating(s)}
+                          className="transition-transform active:scale-90"
+                        >
+                          <Star 
+                            size={32} 
+                            className={`${s <= (hoverRating || rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'} transition-colors`} 
+                          />
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Comment Textarea */}
+                    <div className="space-y-2 mb-6">
+                      <textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value.slice(0, 200))}
+                        placeholder="Apa pendapat Anda tentang layanan kami? (Opsional)"
+                        className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl text-sm font-medium outline-none focus:border-indigo-400 focus:bg-white transition-all min-h-[100px] resize-none"
+                      />
+                      <div className="flex justify-end">
+                        <span className="text-[10px] font-bold text-gray-400">{comment.length}/200</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleSubmitFeedback}
+                      disabled={submitting || rating === 0}
+                      className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                    >
+                      {submitting ? 'Mengirim...' : 'Kirim Ulasan'}
+                      {!submitting && <ChevronDown size={18} className="rotate-270" />}
+                    </button>
+                  </motion.div>
+                )}
+              </div>
             </div>
 
             {/* Filter Buttons */}
             <div className="mt-8 flex flex-wrap gap-2">
+
               <button 
                 onClick={() => setFilterRating(null)}
                 className={`px-5 py-2.5 rounded-2xl text-sm font-bold transition-all ${filterRating === null ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-gray-500 border border-gray-100 hover:bg-gray-50'}`}
