@@ -8,6 +8,7 @@ import PremiumAccessModal from '../common/PremiumAccessModal';
 import { mapFeatureIcon } from '../../utils/mapFeatureIcon';
 import { Search, Filter, Grid, LayoutGrid } from 'lucide-react';
 import { useToast } from '../../hooks/useToast';
+import { statsService } from '../../services/statsService';
 
 const MAIN_SITE_URL = 'https://nuansasolution.id';
 
@@ -120,6 +121,9 @@ const Features = () => {
   };
 
   const handleFeatureClick = (feature) => {
+    // 📊 Track activity
+    statsService.trackGeneratorClick(feature.code);
+
     const accessStatus = getFeatureAccessStatus(feature.code);
     if (feature.status === 'free' || accessStatus === 'free') {
       window.location.href = `${MAIN_SITE_URL}${feature.code}/`;
