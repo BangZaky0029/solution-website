@@ -20,7 +20,7 @@ const CTA = () => {
             </p>
 
             <div className="cta-actions">
-              <Link to="/register">
+              <Link to="/login">
                 <Button variant="primary" size="lg" className="cta-btn-main">
                   Daftar Gratis Sekarang
                 </Button>

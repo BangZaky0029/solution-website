@@ -35,7 +35,7 @@ const Hero = () => {
                 </>
               ) : (
                 <>
-                  <Link to="/register">
+                  <Link to="/login">
                     <button className="btn-hero-primary">
                       Mulai Sekarang <Zap size={18} fill="currentColor" />
                     </button>

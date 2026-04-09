@@ -47,7 +47,7 @@ export const FAQ_DATA: FAQItem[] = [
     {
         id: 2,
         question: 'Bagaimana cara mendaftar?',
-        answer: 'Anda dapat mendaftar melalui halaman Register dengan mengisi email, nama, dan password. Kemudian verifikasi OTP yang dikirim ke nomor WhatsApp Anda.',
+        answer: 'Anda dapat mendaftar secara instan menggunakan tombol "Lanjutkan dengan Google" pada halaman Login. Tidak perlu mengisi form panjang atau verifikasi manual.',
     },
     {
         id: 3,
@@ -75,7 +75,7 @@ export const FAQ_DATA: FAQItem[] = [
 export const ROUTES = {
     HOME: '/',
     LOGIN: '/login',
-    REGISTER: '/register',
+    REGISTER: '/login',
     VERIFY_OTP: '/verify-otp',
     PROFILE: '/profile',
     PAYMENT: '/payment',

@@ -105,7 +105,7 @@ const About = () => {
             <h2>Siap Bergabung?</h2>
             <p>Mulai perjalanan Anda bersama Gateway NUANSA hari ini</p>
             <div className="info-cta-buttons">
-              <a href="/register" className="btn btn-primary btn-lg">
+              <a href="/login" className="btn btn-primary btn-lg">
                 Daftar Sekarang
               </a>
               <a href="/contact" className="btn btn-outline btn-lg">
