@@ -121,7 +121,8 @@ const VerifyPhoneModal = ({ isOpen, onClose, userPhone }) => {
                         type="tel"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ''))}
-                        className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none font-medium placeholder:text-gray-300"
+                        style={{ paddingLeft: '64px' }}
+                        className="w-full pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none font-medium placeholder:text-gray-300"
                         placeholder="Contoh: 0812XXXXXXXX"
                         disabled={loading}
                       />

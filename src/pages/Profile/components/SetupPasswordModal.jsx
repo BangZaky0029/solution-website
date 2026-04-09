@@ -163,7 +163,8 @@ const SetupPasswordModal = ({ isOpen, onClose }) => {
                                             type={showPassword ? "text" : "password"}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full pl-11 pr-12 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-medium transition-all"
+                                            style={{ paddingLeft: '64px', paddingRight: '48px' }}
+                                            className="w-full py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none font-medium transition-all"
                                             placeholder="Buat password kuat..."
                                             autoFocus
                                         />
@@ -205,7 +206,8 @@ const SetupPasswordModal = ({ isOpen, onClose }) => {
                                             type={showConfirmPassword ? "text" : "password"}
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className={`w-full pl-11 pr-12 py-4 rounded-2xl outline-none font-medium transition-all border ${confirmPassword ? (isMatch ? 'bg-emerald-50/30 border-emerald-200 focus:ring-emerald-500' : 'bg-red-50/30 border-red-200 focus:ring-red-500') : 'bg-gray-50 border-gray-200 focus:bg-white focus:ring-blue-500'}`}
+                                            style={{ paddingLeft: '64px', paddingRight: '48px' }}
+                                            className={`w-full py-4 rounded-2xl outline-none font-medium transition-all border ${confirmPassword ? (isMatch ? 'bg-emerald-50/30 border-emerald-200 focus:ring-emerald-500' : 'bg-red-50/30 border-red-200 focus:ring-red-500') : 'bg-gray-50 border-gray-200 focus:bg-white focus:ring-blue-500'}`}
                                             placeholder="Ulangi password..."
                                         />
                                         <button
