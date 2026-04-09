@@ -32,6 +32,7 @@ import DeleteAccountModal from './components/DeleteAccountModal';
 import VerifyPhoneModal from './components/VerifyPhoneModal';
 import AcquisitionModal from '../../components/surveys/AcquisitionModal';
 import surveyService from '../../services/surveyService';
+import { statsService } from '../../services/statsService';
 
 const Profile = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -168,6 +169,10 @@ const Profile = () => {
 
   const handleOpenFeature = (feature) => {
     if (!feature?.code) return showToast('❌ Kode fitur tidak valid', 'error');
+    
+    // 📊 Track activity from Launcher
+    statsService.trackGeneratorClick(feature.code);
+
     window.location.href = `${TOOL_BASE_URL}${feature.code}`;
   };
 
