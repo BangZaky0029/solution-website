@@ -126,7 +126,7 @@ const Features = () => {
 
     const accessStatus = getFeatureAccessStatus(feature.code);
     if (feature.status === 'free' || accessStatus === 'free') {
-      window.location.href = `${MAIN_SITE_URL}/generator-surat/${feature.code}/`;
+      window.location.href = `${MAIN_SITE_URL}${feature.code}/`;
       return;
     }
     if (!isAuthenticated) {
@@ -134,7 +134,7 @@ const Features = () => {
       return;
     }
     if (accessStatus === 'subscribed') {
-      window.location.href = `${MAIN_SITE_URL}/generator-surat/${feature.code}/`;
+      window.location.href = `${MAIN_SITE_URL}${feature.code}/`;
       return;
     }
     setSelectedFeature(feature);
