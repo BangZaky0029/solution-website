@@ -16,7 +16,7 @@ const CTA = () => {
             <h2 className="cta-title">Siap Bergabung dengan Masa Depan?</h2>
             <p className="cta-description">
               Dapatkan akses penuh ke semua fitur dan tools produktivitas kami.
-              Mulai perjalanan efisiensi bisnis Anda bersama <strong>Gateway SOLUTION</strong> hari ini.
+              Mulai perjalanan efisiensi bisnis Anda bersama <strong>Generator Surat APTO</strong> hari ini.
             </p>
 
             <div className="cta-actions">

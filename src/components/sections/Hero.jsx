@@ -18,8 +18,8 @@ const Hero = () => {
               <span className="ann-text">Bonus Trial 3 Hari untuk Pengguna Baru! 🎁</span>
             </div>
 
-            <h1>Platform Digital <span className="text-gradient">SOLUTION</span> Untuk Masa Depan.</h1>
-            <p>Satu akun untuk semua kebutuhan tools produktivitas Anda. Kelola surat, invoicing, dan berbagai dokumen bisnis dalam satu platform terpadu yang aman dan efisien.</p>
+            <h1>Generator Surat <span className="text-gradient">Otomatis</span> Terbaik di Indonesia.</h1>
+            <p>Buat surat resmi, surat legal, dan berbagai dokumen bisnis dalam hitungan detik. Satu akun untuk akses ratusan template profesional yang presisi, aman, dan efisien.</p>
 
             <div className="hero-actions-refined">
               {isAuthenticated ? (

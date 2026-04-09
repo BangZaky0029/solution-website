@@ -16,7 +16,7 @@ const FAQ = () => {
         <div className="section-header-refined">
           <span className="section-badge">Bantuan & Dukungan</span>
           <h2>Pertanyaan Yang Sering Diajukan</h2>
-          <p>Temukan jawaban cepat untuk pertanyaan umum seputar layanan Gateway SOLUTION.</p>
+          <p>Temukan jawaban cepat untuk pertanyaan umum seputar layanan Generator Surat.</p>
         </div>
 
         <div className="faq-grid-refined">

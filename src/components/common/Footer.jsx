@@ -23,7 +23,7 @@ const Footer = () => {
               className="w-32 mb-6"
             />
             <p className="text-gray-400 text-sm leading-relaxed">
-              Platform pembayaran terpadu dengan berbagai tools dan features unggulan.
+              Platform generator surat otomatis dengan berbagai template legal dan bisnis profesional.
             </p>
           </div>
 
