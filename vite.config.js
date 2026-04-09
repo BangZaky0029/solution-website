@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // <-- tambahkan ini
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
@@ -26,6 +26,22 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser',
+    // esbuild is default & 10-20x faster than terser
+    minify: 'esbuild',
+    // Skip gzip size report to speed up build
+    reportCompressedSize: false,
+    // html2pdf.js is inherently large (~975KB) - suppress false warnings
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        // Split large vendors into separate chunks for parallel processing
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-pdf': ['html2pdf.js'],
+        }
+      }
+    }
   }
 })
